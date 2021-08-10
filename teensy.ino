@@ -24,7 +24,8 @@ void receiveEvent(int howMany);
 //int chipSelect = BUILTIN_SDCARD;
 
 CRGB leds[NUM_LEDS];
-CRGB ledsTmp[NUM_LEDS/2];
+CRGB ledsTmpLow[NUM_LEDS/2];
+CRGB ledsTmpHigh[NUM_LEDS/2];
 CRGB secondary[NUM_LEDS_SECONDARY];
 
 union vu_ vu;
@@ -75,9 +76,9 @@ void mirror() {
 }
 // flip 0->71 to 71->0
 void flip() {
-  memmove8(&ledsTmp[0], &leds[0], (NUM_LEDS/2) * sizeof(CRGB));
+  memmove8(&ledsTmpLow[0], &leds[0], (NUM_LEDS/2) * sizeof(CRGB));
   for (uint8_t i=0; i<NUM_LEDS/2; i++){
-    memmove8(&leds[(NUM_LEDS/2)-1-i], &ledsTmp[i], sizeof(CRGB));
+    memmove8(&leds[(NUM_LEDS/2)-1-i], &ledsTmpLow[i], sizeof(CRGB));
   }
 }
 
@@ -129,8 +130,12 @@ void setup() {
 typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {hearts, glow, strobo, neontube};
 //SimplePatternList gPatterns = {blocks};
-SimplePatternList gPatterns = {neontube, vumeter};
+
+//SimplePatternList gPatterns = {neontube, blocks, binaryCounter, glow};
+//SimplePatternList gPatterns = {binaryCounter};
 //SimplePatternList gPatterns = {neontube};
+//SimplePatternList gPatterns = {strobo};
+SimplePatternList gPatterns = {glow};
 
 uint8_t gCurrentPatternNumber = 0;
 
@@ -161,7 +166,7 @@ void frame(){
   // THIS IS JUST THE BEGINNING
   /////////////////////////////
   EVERY_N_MILLISECONDS( 20 ) { gHue++; }
-  EVERY_N_SECONDS(      10 ) {
+  EVERY_N_SECONDS(      20 ) {
     Serial.println("Changing effect ...");
     msPerFrame = 10;
     FastLED.clear();
@@ -173,7 +178,7 @@ void frame(){
     }
   }
 
-  blocks();
+  gPatterns[gCurrentPatternNumber]();
   
   if(impulseCount <= 2){
      //glow();   

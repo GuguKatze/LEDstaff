@@ -6,8 +6,8 @@ unsigned long nextBinaryCounter;
 
 void binaryCounter() {
   if(millis() > nextBinaryCounter){
-    nextBinaryCounter = nextBinaryCounter + 1000;
-    int long seconds = millis() / 1000;
+    nextBinaryCounter = nextBinaryCounter + 250;
+    int long seconds = millis() / 250;
     //seconds = random(255);
     for(int i = 0; i < bitsToUse; i++){
       unsigned int color = map(i, 0, bitsToUse, 224, 0);
@@ -22,7 +22,7 @@ void binaryCounter() {
         //fill_solid (&leds[143-(bitsToUse*bitWidth)+(i*bitWidth)], bitWidth, CHSV(  color, 255, 255));
       }
     }
-    flip();
-    mirror();
+    //flip();
+    //mirror();
   }
 }

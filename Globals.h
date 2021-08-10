@@ -5,7 +5,8 @@
 //#define SDA A2
 
 extern CRGB leds[NUM_LEDS];
-extern CRGB ledsTmp[NUM_LEDS/2];
+extern CRGB ledsTmpLow[NUM_LEDS/2];
+extern CRGB ledsTmpHigh[NUM_LEDS/2];
 extern CRGB secondary[NUM_LEDS_SECONDARY];
 
 extern bool useSerial;
