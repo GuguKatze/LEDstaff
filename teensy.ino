@@ -135,6 +135,7 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {binaryCounter};
 //SimplePatternList gPatterns = {neontube};
 //SimplePatternList gPatterns = {strobo};
+//SimplePatternList gPatterns = {glow};
 SimplePatternList gPatterns = {glow};
 
 uint8_t gCurrentPatternNumber = 0;
@@ -152,8 +153,8 @@ void loop() {
     }
   }
   if(lastFrame + msPerFrame < millis()){
-    frame();
     lastFrame = millis();  
+    frame();
   }
 }
 

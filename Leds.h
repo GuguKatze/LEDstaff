@@ -44,3 +44,4 @@ void hearts();
 void blocks();
 void police();
 void vumeter();
+void fire();
