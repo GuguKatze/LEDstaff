@@ -1,13 +1,10 @@
 #pragma once
 #include <Arduino.h>
-//#define NUM_LEDS              72
 #define NUM_LEDS             144
-//#define NUM_LEDS_SECONDARY     7
 #define NUM_LEDS_SECONDARY     6
 
-#define BRIGHTNESS            32
-#define MIN_BRIGHTNESS        32 // absolute PWM
-#define MAX_BRIGHTNESS       255 // absolute PWM
+#define BRIGHTNESS            56
+#define MAX_BRIGHTNESS       216 // absolute PWM
 
 #define MAX_POWER_MILLIAMPS 1500
 #define MAX_POWER_VOLTS        6
@@ -39,7 +36,7 @@ void rainbow();
 
 void neontube();
 void strobo();
-void glow();
+void pixels();
 void hearts();
 void blocks();
 void police();

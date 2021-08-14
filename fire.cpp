@@ -1,11 +1,11 @@
 #include "Globals.h"
 // Less cooling = taller flames.  More cooling = shorter flames.
 // Default 50, suggested range 20-100 
-#define COOLING  90
+#define COOLING  104
 // SPARKING: What chance (out of 255) is there that a new spark will be lit?
 // Higher chance = more roaring fire.  Lower chance = more flickery fire.
 // Default 120, suggested range 50-200.
-#define SPARKING 120
+#define SPARKING 75
 
 bool gReverseDirection = false;
 
@@ -48,8 +48,10 @@ CRGB foob( uint8_t temperature)
 
 
 void fire () {
-  msPerFrame = 25;
-  FastLED.setBrightness(24);
+  if(firstFrame){
+    msPerFrame = 30;
+    FastLED.setBrightness(32);
+  }
   // Array of temperature readings at each simulation cell
   static uint8_t heatLow[(NUM_LEDS / 2)];
   static uint8_t heatHigh[(NUM_LEDS / 2)];
@@ -91,4 +93,6 @@ void fire () {
       leds[pixelnumber] = colorLow;
       leds[pixelnumber + (NUM_LEDS / 2)] = colorHigh;
     }
+    memmove8(&secondary[0], &leds[0], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
+    memmove8(&secondary[(NUM_LEDS_SECONDARY/2)], &leds[(NUM_LEDS/2)], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
 }

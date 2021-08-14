@@ -11,6 +11,7 @@ extern CRGB secondary[NUM_LEDS_SECONDARY];
 
 extern bool useSerial;
 extern bool ledsEnabled;
+extern bool firstFrame;
 
 //extern bool mirror;
 extern uint8_t gHue;
@@ -25,12 +26,16 @@ void flip();
 
 union vu_ {
   struct __attribute__((packed)){
+    int8_t pitch;
     //uint16_t left[7];
     uint8_t left[7];
     //uint16_t right[7];
     uint8_t right[7];
   };
   //uint8_t bytes[28];
-  uint8_t bytes[14];
+  //uint8_t bytes[14];
+  uint8_t bytes[15];
 };
 extern union vu_ vu;
+
+extern int8_t pitch;

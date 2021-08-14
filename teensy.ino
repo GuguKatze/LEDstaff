@@ -29,10 +29,12 @@ CRGB ledsTmpHigh[NUM_LEDS/2];
 CRGB secondary[NUM_LEDS_SECONDARY];
 
 union vu_ vu;
+int8_t pitch;
 
 bool useSerial = true;
 bool ledsEnabled = true; // true;
 uint8_t gHue = 0;
+bool firstFrame = true; // set for the first frame of an effect
 
 unsigned int state = 0;
 unsigned long lastImpulse = 0;
@@ -92,7 +94,7 @@ void setup() {
   FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,   0,  3).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
   FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary,   3,  3).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
   FastLED.setBrightness(MAX_BRIGHTNESS); // PWM duty cycles
-  FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
+  //FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
   FastLED.setMaxRefreshRate(0);
   FastLED.clear();
   FastLED.show();
@@ -126,25 +128,26 @@ void setup() {
   Serial.println("Setup finished ...");
 }
 
+uint8_t gCurrentPatternNumber = 0;
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 typedef void (*SimplePatternList[])();
-//SimplePatternList gPatterns = {hearts, glow, strobo, neontube};
-//SimplePatternList gPatterns = {blocks};
 
+// <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {neontube, blocks, binaryCounter, glow};
-//SimplePatternList gPatterns = {binaryCounter};
-//SimplePatternList gPatterns = {neontube};
-//SimplePatternList gPatterns = {strobo};
 //SimplePatternList gPatterns = {glow};
-SimplePatternList gPatterns = {glow};
+SimplePatternList gPatterns = {pixels};
+//SimplePatternList gPatterns = {fire};
 
-uint8_t gCurrentPatternNumber = 0;
+
 
 //////////
 // loop //
 //////////
 void loop() {
   EVERY_N_MILLISECONDS(20){
+    gHue++;
+  }
+  EVERY_N_MILLISECONDS(250){
     Wire.requestFrom(0x40, sizeof(vu.bytes));
     //    Serial.print((char)Wire.peek());
     if (Wire.available()) {
@@ -152,68 +155,36 @@ void loop() {
       //Serial.print("<");
     }
   }
+  pitch = vu.pitch * -1;
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
     frame();
   }
 }
-
 void frame(){
-  //unsigned long startTime = millis();
-  if(boolClear){
-    boolClear = false;
-    FastLED.clear();
-  }
   // THIS IS JUST THE BEGINNING
   /////////////////////////////
-  EVERY_N_MILLISECONDS( 20 ) { gHue++; }
-  EVERY_N_SECONDS(      20 ) {
+  EVERY_N_SECONDS(10){
     Serial.println("Changing effect ...");
-    msPerFrame = 10;
-    FastLED.clear();
-    //FastLED.setMaxRefreshRate(0);
-    //FastLED.setBrightness(MAX_BRIGHTNESS);
-    gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE( gPatterns);
+    FastLED.setBrightness(BRIGHTNESS);
+    msPerFrame = 20;
+    firstFrame = true;
+    //FastLED.clear();
+    gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
     if(impulseCount > 0){
       impulseCount--;
     }
   }
-
   gPatterns[gCurrentPatternNumber]();
-  
+  firstFrame = false;
   if(impulseCount <= 2){
      //glow();   
-     //binaryCounter();
-    //neontube();   
-    //vumeter();
-    //blocks();
   }else{
     //Serial.print(".");
     //vumeter();
-    //glow();
-    //binaryCounter();
-    //gPatterns[gCurrentPatternNumber]();
   }
- 
-  // fibre effect
-  //EVERY_N_MILLISECONDS(250){
-    //memmove8( &secondary[  0], &leds[  0], 3 * sizeof( CRGB)/4 );
-    //memmove8( &secondary[  3], &leds[ 69], 3 * sizeof( CRGB)/4 );
-    //unsigned int color = millis() % 255;
-    //fill_solid(secondary, 3, CHSV(color, 255, 255));
-  //}
   //////////////////
   // THIS IS THE END
-  // benchmark
-  EVERY_N_MILLISECONDS(1000){
-    //unsigned long endTime = millis();  
-    //unsigned int delta = endTime - startTime;
-    /*
-    unsigned int color = map(delta, 0, 5, 96, 0);
-    nscale8(&leds[0], 5, 250);
-    leds[delta] = CHSV(color, 255, 255);
-    */
-  }
   if(!ledsEnabled){
     FastLED.clear();
   }
