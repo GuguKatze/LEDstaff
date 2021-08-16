@@ -24,9 +24,14 @@ void receiveEvent(int howMany);
 //int chipSelect = BUILTIN_SDCARD;
 
 CRGB leds[NUM_LEDS];
+CRGB ledsTmp[NUM_LEDS];
 CRGB ledsTmpLow[NUM_LEDS/2];
 CRGB ledsTmpHigh[NUM_LEDS/2];
 CRGB secondary[NUM_LEDS_SECONDARY];
+
+CRGB bufferBig[NUM_LEDS * 3];
+CRGB bufferLow[NUM_LEDS * 3];
+CRGB bufferHigh[NUM_LEDS * 3];
 
 union vu_ vu;
 int8_t pitch;
@@ -48,6 +53,7 @@ void s4Impulse(){ lastImpulse = millis(); if(impulseCount < 5){ impulseCount++; 
 
 bool boolClear = false;
 
+unsigned long wireDuration = 0;
 unsigned long lastFrame =   0;
 unsigned int msPerFrame =  10;
 
@@ -82,6 +88,13 @@ void flip() {
   for (uint8_t i=0; i<NUM_LEDS/2; i++){
     memmove8(&leds[(NUM_LEDS/2)-1-i], &ledsTmpLow[i], sizeof(CRGB));
   }
+}
+
+uint8_t iH(uint8_t index){ // indexHelper
+ if(index <= 71){
+   return 71 - index;
+ }
+ return index;
 }
 
 void setup() {
@@ -135,27 +148,26 @@ typedef void (*SimplePatternList[])();
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {neontube, blocks, binaryCounter, glow};
 //SimplePatternList gPatterns = {glow};
-SimplePatternList gPatterns = {pixels};
 //SimplePatternList gPatterns = {fire};
-
-
+//SimplePatternList gPatterns = {waterdrops};
+//SimplePatternList gPatterns = {level};
+SimplePatternList gPatterns = {pixels2};
 
 //////////
 // loop //
 //////////
 void loop() {
-  EVERY_N_MILLISECONDS(20){
-    gHue++;
-  }
   EVERY_N_MILLISECONDS(250){
+    unsigned long wireStartTime = millis();
     Wire.requestFrom(0x40, sizeof(vu.bytes));
     //    Serial.print((char)Wire.peek());
     if (Wire.available()) {
       int i = 0; while(Wire.available()) { vu.bytes[i] = Wire.read(); i++; }
       //Serial.print("<");
     }
+    wireDuration = millis() - wireStartTime;
   }
-  pitch = vu.pitch * -1;
+  //pitch = vu.pitch * -1;
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
     frame();
@@ -164,10 +176,10 @@ void loop() {
 void frame(){
   // THIS IS JUST THE BEGINNING
   /////////////////////////////
-  EVERY_N_SECONDS(10){
+  EVERY_N_SECONDS(600){
     Serial.println("Changing effect ...");
     FastLED.setBrightness(BRIGHTNESS);
-    msPerFrame = 20;
+    //msPerFrame = 20;
     firstFrame = true;
     //FastLED.clear();
     gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
@@ -190,5 +202,12 @@ void frame(){
   }
   //leds[  2] = CRGB::Green;
   //leds[141] = CRGB::Red;
+  
+  //
+  unsigned long frameDuration = millis() - lastFrame;
+  //leds[8] = CRGB::Red;
+  //leds[frameDuration] = CRGB::Green;
+  //leds[wireDuration] = CRGB::Yellow;
+  //
   FastLED.show();
 }
