@@ -20,7 +20,6 @@ void pixels2 () {
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));
   //fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue + 128, 255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue, 255, 255));
-  //glowColor += 2;
 
   fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
   if(random(0, beatsin16(12, 32, 256)) == 0){
@@ -33,6 +32,9 @@ void pixels2 () {
       Pixels[unused].velocity = random(40, 120);
       Pixels[unused].startTime = millis();
       Pixels[unused].pixelData = CHSV(gHue, 255, 255);
+      if(random(0,2) == 0){
+        Pixels[unused].pixelData = CHSV(gHue + 128, 255, 255);
+      }
     }
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){

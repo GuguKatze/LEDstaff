@@ -12,6 +12,8 @@ void snowflakes () {
       Pixels[i].startTime = 0;
       Pixels[i].pixelData = CRGB::Black;
     }
+    fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CRGB::MediumTurquoise);
+    fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CRGB::MediumTurquoise);
   }
 
  fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
@@ -21,10 +23,11 @@ void snowflakes () {
       Serial.println("Using unused index: " + String(unused));
       Pixels[unused].used = true;
       Pixels[unused].ledPos = 143;
-      Pixels[unused].gravity = random(80, 90) / 1000.0;
+      Pixels[unused].gravity = random(85, 95) / 1000.0;
       Pixels[unused].velocity = random(0, 10) - 5;
       Pixels[unused].startTime = millis();
-      Pixels[unused].pixelData = CRGB::White;
+      //Pixels[unused].pixelData = CRGB::White;
+      Pixels[unused].pixelData = CHSV(random(140, 180), 64, 255);
     }
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
@@ -32,17 +35,15 @@ void snowflakes () {
       Serial.println("Drawing index: " + String(i));
       int ledPos = (int) Pixels[i].ledPos;
       bufferBig[ledPos] = Pixels[i].pixelData;
-      //if(millis() - Pixels[i].startTime > 1000){
-      if(Pixels[i].velocity < -80){
-        Pixels[i].pixelData.fadeToBlackBy(4);
-      }else if(Pixels[i].velocity < 5){
-        Pixels[i].pixelData.fadeLightBy(4);
+      Pixels[i].pixelData.fadeLightBy(6);
+      if(random(0, 2048) == 0){
+        Pixels[i].pixelData.maximizeBrightness();
       }
       Pixels[i].ledPos += Pixels[i].velocity / 100;
       Pixels[i].gravity = (random(10, 20) - beatsin16(6, 0, 20)) / 1000.0;
       Pixels[i].velocity -= Pixels[i].gravity;
       if(random(0, 64) == 0){
-        Pixels[i].velocity += random(14, 20) / 100.0;
+        Pixels[i].velocity += random(20, 30) / 100.0;
       }
       //Pixels[i].velocity -= 0.9;
       if(ledPos > 215 || ledPos == 0){

@@ -165,7 +165,8 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {level};
 //SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {snowflakes};
-SimplePatternList gPatterns = {pixels2, snowflakes};
+SimplePatternList gPatterns = {snowflakes, pixels2};
+//SimplePatternList gPatterns = {binaryCounter};
 
 //////////
 // loop //

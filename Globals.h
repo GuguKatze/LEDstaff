@@ -54,6 +54,7 @@ typedef struct Pixel {
   float velocity;
   unsigned long startTime;
   CRGB pixelData;
+  //CHSV pixelData;
 } Pixel;
 
 #define NUM_PIXELS 50
