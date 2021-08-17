@@ -1,6 +1,5 @@
 #include "Globals.h"
-
-void pixels2 () {
+void snowflakes () {
   if(firstFrame){
     FastLED.setBrightness(MAX_BRIGHTNESS);
     msPerFrame = 10;
@@ -14,25 +13,18 @@ void pixels2 () {
       Pixels[i].pixelData = CRGB::Black;
     }
   }
-  //FastLED.setBrightness(beatsin16(20, 32, 64));
-  EVERY_N_MILLISECONDS(120){ gHue++; }
-  
-  fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));
-  //fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue + 128, 255, 255));
-  fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue, 255, 255));
-  //glowColor += 2;
 
-  fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
-  if(random(0, beatsin16(12, 32, 256)) == 0){
+ fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
+ if(random(0, beatsin16(12, 64, 512)) == 0){
     int unused = findUnused();
     if(unused != -1){
       Serial.println("Using unused index: " + String(unused));
       Pixels[unused].used = true;
-      Pixels[unused].ledPos = 72;
-      Pixels[unused].gravity = random(800, 900) / 1000.0;
-      Pixels[unused].velocity = random(40, 120);
+      Pixels[unused].ledPos = 143;
+      Pixels[unused].gravity = random(80, 90) / 1000.0;
+      Pixels[unused].velocity = random(0, 10) - 5;
       Pixels[unused].startTime = millis();
-      Pixels[unused].pixelData = CHSV(gHue, 255, 255);
+      Pixels[unused].pixelData = CRGB::White;
     }
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
@@ -47,7 +39,11 @@ void pixels2 () {
         Pixels[i].pixelData.fadeLightBy(4);
       }
       Pixels[i].ledPos += Pixels[i].velocity / 100;
+      Pixels[i].gravity = (random(10, 20) - beatsin16(6, 0, 20)) / 1000.0;
       Pixels[i].velocity -= Pixels[i].gravity;
+      if(random(0, 64) == 0){
+        Pixels[i].velocity += random(14, 20) / 100.0;
+      }
       //Pixels[i].velocity -= 0.9;
       if(ledPos > 215 || ledPos == 0){
         Pixels[i].used = false;

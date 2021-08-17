@@ -27,6 +27,7 @@ extern unsigned long pixelNextUpdateTime;
 
 extern unsigned int state;
 
+unsigned int findUnused();
 void mirror();
 void flip();
 uint8_t iH(uint8_t);
@@ -45,3 +46,15 @@ union vu_ {
 };
 extern union vu_ vu;
 //extern int8_t pitch;
+
+typedef struct Pixel {
+  bool used;
+  float ledPos;
+  float gravity;
+  float velocity;
+  unsigned long startTime;
+  CRGB pixelData;
+} Pixel;
+
+#define NUM_PIXELS 50
+extern Pixel Pixels[NUM_PIXELS];

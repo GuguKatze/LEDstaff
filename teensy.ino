@@ -33,6 +33,8 @@ CRGB bufferBig[NUM_LEDS * 3];
 CRGB bufferLow[NUM_LEDS * 3];
 CRGB bufferHigh[NUM_LEDS * 3];
 
+Pixel Pixels[NUM_PIXELS];
+
 union vu_ vu;
 int8_t pitch;
 
@@ -97,6 +99,16 @@ uint8_t iH(uint8_t index){ // indexHelper
  return index;
 }
 
+unsigned int findUnused() {
+  for (uint8_t i = 0; i < NUM_PIXELS; i++){
+    Serial.println("Testing index: " + String(i));
+    if (!Pixels[i].used){
+      return i;
+    }
+  }
+  return -1;
+}
+
 void setup() {
   delay(1000); if(useSerial){ Serial.begin(115200); }; delay(1000);
   if(useSerial && !Serial){ delay(1000); if(!Serial){useSerial = false; }; }
@@ -151,7 +163,9 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {fire};
 //SimplePatternList gPatterns = {waterdrops};
 //SimplePatternList gPatterns = {level};
-SimplePatternList gPatterns = {pixels2};
+//SimplePatternList gPatterns = {pixels2};
+//SimplePatternList gPatterns = {snowflakes};
+SimplePatternList gPatterns = {pixels2, snowflakes};
 
 //////////
 // loop //
@@ -176,7 +190,7 @@ void loop() {
 void frame(){
   // THIS IS JUST THE BEGINNING
   /////////////////////////////
-  EVERY_N_SECONDS(600){
+  EVERY_N_SECONDS(60){
     Serial.println("Changing effect ...");
     FastLED.setBrightness(BRIGHTNESS);
     //msPerFrame = 20;

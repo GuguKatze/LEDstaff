@@ -4,7 +4,7 @@
 #define NUM_LEDS_SECONDARY     6
 
 #define BRIGHTNESS            56
-#define MAX_BRIGHTNESS       216 // absolute PWM
+#define MAX_BRIGHTNESS       224 // absolute PWM
 
 #define MAX_POWER_MILLIAMPS 1500
 #define MAX_POWER_VOLTS        6
@@ -57,3 +57,4 @@ void level();
 
 void pixels();
 void pixels2();
+void snowflakes();
