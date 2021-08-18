@@ -13,11 +13,12 @@ extern CRGB secondary[NUM_LEDS_SECONDARY];
 extern CRGB bufferBig[NUM_LEDS * 3];
 extern CRGB bufferLow[NUM_LEDS * 3];
 extern CRGB bufferHigh[NUM_LEDS * 3];
+extern bool blockingLookup[NUM_LEDS];
 
 extern bool useSerial;
 extern bool ledsEnabled;
 extern bool firstFrame;
-//extern bool requireCommunication;
+extern bool readFromNano;
 
 //extern bool mirror;
 extern uint8_t gHue;
@@ -27,7 +28,7 @@ extern unsigned long pixelNextUpdateTime;
 
 extern unsigned int state;
 
-unsigned int findUnused();
+int findUnused();
 void mirror();
 void flip();
 uint8_t iH(uint8_t);
@@ -55,7 +56,8 @@ typedef struct Pixel {
   unsigned long startTime;
   CRGB pixelData;
   //CHSV pixelData;
+  bool blocking;
 } Pixel;
 
-#define NUM_PIXELS 50
+#define NUM_PIXELS 100
 extern Pixel Pixels[NUM_PIXELS];

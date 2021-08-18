@@ -34,6 +34,7 @@ CRGB bufferLow[NUM_LEDS * 3];
 CRGB bufferHigh[NUM_LEDS * 3];
 
 Pixel Pixels[NUM_PIXELS];
+bool blockingLookup[NUM_LEDS];
 
 union vu_ vu;
 int8_t pitch;
@@ -42,16 +43,19 @@ bool useSerial = true;
 bool ledsEnabled = true; // true;
 uint8_t gHue = 0;
 bool firstFrame = true; // set for the first frame of an effect
+bool readFromNano = false;
 
 unsigned int state = 0;
 unsigned long lastImpulse = 0;
+unsigned long lastEffectChange = 0;
+unsigned long lastImpulseDecrease = 0;
 
 bool boolImpulse = true;
 uint8_t impulseCount = 0;
-void s1Impulse(){ lastImpulse = millis(); if(impulseCount < 5){ impulseCount++; }; boolImpulse = true; state = 1; };
-void s2Impulse(){ lastImpulse = millis(); if(impulseCount < 5){ impulseCount++; }; boolImpulse = true; state = 2; };
-void s3Impulse(){ lastImpulse = millis(); if(impulseCount < 5){ impulseCount++; }; boolImpulse = true; state = 3; };
-void s4Impulse(){ lastImpulse = millis(); if(impulseCount < 5){ impulseCount++; }; boolImpulse = true; state = 4; };
+void s1Impulse(){ Serial.println("s1"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 1; };
+void s2Impulse(){ Serial.println("s2"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 2; };
+void s3Impulse(){ Serial.println("s3"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 3; };
+void s4Impulse(){ Serial.println("s4"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 4; };
 
 bool boolClear = false;
 
@@ -99,12 +103,10 @@ uint8_t iH(uint8_t index){ // indexHelper
  return index;
 }
 
-unsigned int findUnused() {
+int findUnused() {
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
-    Serial.println("Testing index: " + String(i));
-    if (!Pixels[i].used){
-      return i;
-    }
+    if (Pixels[i].used){ continue; }
+    return i;
   }
   return -1;
 }
@@ -164,23 +166,37 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {waterdrops};
 //SimplePatternList gPatterns = {level};
 //SimplePatternList gPatterns = {pixels2};
-//SimplePatternList gPatterns = {snowflakes};
-SimplePatternList gPatterns = {snowflakes, pixels2};
+SimplePatternList gPatterns = {snowflakes};
+//SimplePatternList gPatterns = {snowflakes, pixels2};
 //SimplePatternList gPatterns = {binaryCounter};
 
 //////////
 // loop //
 //////////
 void loop() {
-  EVERY_N_MILLISECONDS(250){
-    unsigned long wireStartTime = millis();
-    Wire.requestFrom(0x40, sizeof(vu.bytes));
-    //    Serial.print((char)Wire.peek());
-    if (Wire.available()) {
-      int i = 0; while(Wire.available()) { vu.bytes[i] = Wire.read(); i++; }
-      //Serial.print("<");
+  if(millis() - lastEffectChange > 1000 * 60 * 3){
+    lastEffectChange = millis();
+    Serial.println("Changing effect ...");
+    firstFrame = true;
+    gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
+  }
+  if(millis() - lastImpulseDecrease > 1000){
+    lastImpulseDecrease = millis();
+    if(impulseCount > 0){
+      impulseCount--;
     }
-    wireDuration = millis() - wireStartTime;
+  }
+  if(readFromNano){
+    EVERY_N_MILLISECONDS(250){
+      unsigned long wireStartTime = millis();
+      Wire.requestFrom(0x40, sizeof(vu.bytes));
+      //    Serial.print((char)Wire.peek());
+      if (Wire.available()) {
+        int i = 0; while(Wire.available()) { vu.bytes[i] = Wire.read(); i++; }
+        //Serial.print("<");
+      }
+      wireDuration = millis() - wireStartTime;
+    }
   }
   //pitch = vu.pitch * -1;
   if(lastFrame + msPerFrame < millis()){
@@ -191,25 +207,14 @@ void loop() {
 void frame(){
   // THIS IS JUST THE BEGINNING
   /////////////////////////////
-  EVERY_N_SECONDS(60){
-    Serial.println("Changing effect ...");
-    FastLED.setBrightness(BRIGHTNESS);
-    //msPerFrame = 20;
-    firstFrame = true;
-    //FastLED.clear();
-    gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
-    if(impulseCount > 0){
-      impulseCount--;
-    }
-  }
-  gPatterns[gCurrentPatternNumber]();
-  firstFrame = false;
-  if(impulseCount <= 2){
-     //glow();   
+  //gPatterns[gCurrentPatternNumber]();
+  if(impulseCount <= 4){
+     gPatterns[gCurrentPatternNumber](); 
   }else{
-    //Serial.print(".");
     //vumeter();
+    binaryCounter();
   }
+  firstFrame = false;
   //////////////////
   // THIS IS THE END
   if(!ledsEnabled){
@@ -220,9 +225,10 @@ void frame(){
   
   //
   unsigned long frameDuration = millis() - lastFrame;
-  //leds[8] = CRGB::Red;
-  //leds[frameDuration] = CRGB::Green;
-  //leds[wireDuration] = CRGB::Yellow;
+  leds[8] = CRGB::Red;
+  leds[frameDuration] = CRGB::Green;
+  leds[wireDuration] = CRGB::Yellow;
+  leds[impulseCount] = CRGB::Blue;
   //
   FastLED.show();
 }
