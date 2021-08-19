@@ -54,7 +54,7 @@ void waterdrops();
 void level();
 
 
-
+void glow();
 void pixels();
 void pixels2();
 void snowflakes();

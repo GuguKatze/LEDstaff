@@ -161,12 +161,12 @@ typedef void (*SimplePatternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {neontube, blocks, binaryCounter, glow};
-//SimplePatternList gPatterns = {glow};
+SimplePatternList gPatterns = {glow};
 //SimplePatternList gPatterns = {fire};
 //SimplePatternList gPatterns = {waterdrops};
 //SimplePatternList gPatterns = {level};
 //SimplePatternList gPatterns = {pixels2};
-SimplePatternList gPatterns = {snowflakes};
+//SimplePatternList gPatterns = {snowflakes};
 //SimplePatternList gPatterns = {snowflakes, pixels2};
 //SimplePatternList gPatterns = {binaryCounter};
 
@@ -225,10 +225,10 @@ void frame(){
   
   //
   unsigned long frameDuration = millis() - lastFrame;
-  leds[8] = CRGB::Red;
-  leds[frameDuration] = CRGB::Green;
-  leds[wireDuration] = CRGB::Yellow;
-  leds[impulseCount] = CRGB::Blue;
+  //leds[8] = CRGB::Red;
+  //leds[frameDuration] = CRGB::Green;
+  //leds[wireDuration] = CRGB::Yellow;
+  //leds[impulseCount] = CRGB::Blue;
   //
   FastLED.show();
 }
