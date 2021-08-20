@@ -11,8 +11,8 @@ extern CRGB ledsTmpHigh[NUM_LEDS/2];
 extern CRGB secondary[NUM_LEDS_SECONDARY];
 
 extern CRGB bufferBig[NUM_LEDS * 3];
-extern CRGB bufferLow[NUM_LEDS * 3];
-extern CRGB bufferHigh[NUM_LEDS * 3];
+//extern CRGB bufferLow[NUM_LEDS * 3];
+//extern CRGB bufferHigh[NUM_LEDS * 3];
 extern bool blockingLookup[NUM_LEDS];
 
 extern bool useSerial;

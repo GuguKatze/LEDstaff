@@ -4,6 +4,8 @@ void pixels2 () {
   if(firstFrame){
     FastLED.setBrightness(MAX_BRIGHTNESS);
     msPerFrame = 10;
+    fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
+    
     // initialize Pixels
     for(int i = 0; i < NUM_PIXELS; i++){
       Pixels[i].used = false;

@@ -23,10 +23,12 @@ void receiveEvent(int howMany);
 //#include <SPI.h>
 //int chipSelect = BUILTIN_SDCARD;
 
-CRGB leds[NUM_LEDS];
+CRGB    leds[NUM_LEDS];
 CRGB ledsTmp[NUM_LEDS];
-CRGB ledsTmpLow[NUM_LEDS/2];
-CRGB ledsTmpHigh[NUM_LEDS/2];
+
+//CRGB ledsTmpLow[NUM_LEDS/2];
+//CRGB ledsTmpHigh[NUM_LEDS/2];
+
 CRGB secondary[NUM_LEDS_SECONDARY];
 
 CRGB bufferBig[NUM_LEDS * 3];
@@ -161,20 +163,20 @@ typedef void (*SimplePatternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {neontube, blocks, binaryCounter, glow};
-SimplePatternList gPatterns = {glow};
+//SimplePatternList gPatterns = {glow};
 //SimplePatternList gPatterns = {fire};
 //SimplePatternList gPatterns = {waterdrops};
 //SimplePatternList gPatterns = {level};
 //SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {snowflakes};
 //SimplePatternList gPatterns = {snowflakes, pixels2};
-//SimplePatternList gPatterns = {binaryCounter};
+SimplePatternList gPatterns = {binaryCounter};
 
 //////////
 // loop //
 //////////
 void loop() {
-  if(millis() - lastEffectChange > 1000 * 60 * 3){
+  if(millis() - lastEffectChange > 1000 * 60 * 10){
     lastEffectChange = millis();
     Serial.println("Changing effect ...");
     firstFrame = true;
@@ -223,12 +225,10 @@ void frame(){
   //leds[  2] = CRGB::Green;
   //leds[141] = CRGB::Red;
   
-  //
+  // debug
   unsigned long frameDuration = millis() - lastFrame;
-  //leds[8] = CRGB::Red;
-  //leds[frameDuration] = CRGB::Green;
-  //leds[wireDuration] = CRGB::Yellow;
-  //leds[impulseCount] = CRGB::Blue;
-  //
+  if(frameDuration > 2){ leds[frameDuration] = CRGB::Green;  }
+  if(wireDuration  > 6){ leds[wireDuration]  = CRGB::Yellow; }
+  if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
   FastLED.show();
 }
