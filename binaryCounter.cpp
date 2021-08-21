@@ -35,9 +35,16 @@ void binaryCounter() {
     //flip();
     //mirror();
   }
-  memmove8(&leds[NUM_LEDS/2], &bufferBig[(NUM_LEDS/2)+beatsin8(32, 0, (NUM_LEDS/2))], (NUM_LEDS/2) * sizeof(CRGB));
-  for (uint8_t i=0; i<NUM_LEDS/2; i++){
-    memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i + beatsin8(32, 0, (NUM_LEDS/2))], sizeof(CRGB));
+  buffer2led(beatsin8(16, 0, (NUM_LEDS/2)));
+  //memmove8(&leds[NUM_LEDS/2], &bufferBig[(NUM_LEDS/2)+beatsin8(32, 0, (NUM_LEDS/2))], (NUM_LEDS/2) * sizeof(CRGB));
+  //for (uint8_t i=0; i<NUM_LEDS/2; i++){
+  //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i + beatsin8(32, 0, (NUM_LEDS/2))], sizeof(CRGB));
+  //}
+  if(leds[0]){
+    fill_solid (&secondary[0], NUM_LEDS_SECONDARY/2, leds[0]);
+  }
+  if(leds[NUM_LEDS/2]){
+    fill_solid (&secondary[NUM_LEDS_SECONDARY/2], NUM_LEDS_SECONDARY/2, leds[NUM_LEDS/2]);
   }
 }
 

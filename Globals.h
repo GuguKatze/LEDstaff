@@ -8,11 +8,10 @@ extern CRGB leds[NUM_LEDS];
 extern CRGB ledsTmp[NUM_LEDS];
 extern CRGB ledsTmpLow[NUM_LEDS/2];
 extern CRGB ledsTmpHigh[NUM_LEDS/2];
+extern CRGB bufferBig[NUM_LEDS * 3];
+
 extern CRGB secondary[NUM_LEDS_SECONDARY];
 
-extern CRGB bufferBig[NUM_LEDS * 3];
-//extern CRGB bufferLow[NUM_LEDS * 3];
-//extern CRGB bufferHigh[NUM_LEDS * 3];
 extern bool blockingLookup[NUM_LEDS];
 
 extern bool useSerial;
@@ -24,13 +23,15 @@ extern bool readFromNano;
 extern uint8_t gHue;
 extern unsigned int msPerFrame;
 
-extern unsigned long pixelNextUpdateTime;
+//extern unsigned long pixelNextUpdateTime;
 
 extern unsigned int state;
 
 int findUnused();
 void mirror();
 void flip();
+void buffer2led(unsigned int bufferOffset);
+
 uint8_t iH(uint8_t);
 
 union vu_ {

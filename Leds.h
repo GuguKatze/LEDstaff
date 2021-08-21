@@ -3,7 +3,7 @@
 #define NUM_LEDS             144
 #define NUM_LEDS_SECONDARY     6
 
-#define BRIGHTNESS            56
+#define BRIGHTNESS            32
 #define MAX_BRIGHTNESS       224 // absolute PWM
 
 #define MAX_POWER_MILLIAMPS 1500
