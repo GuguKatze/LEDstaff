@@ -3,8 +3,8 @@
 #define NUM_LEDS             144
 #define NUM_LEDS_SECONDARY     6
 
-#define BRIGHTNESS            32
-#define MAX_BRIGHTNESS       224 // absolute PWM
+#define BRIGHTNESS            40
+#define MAX_BRIGHTNESS       240 // absolute PWM
 
 #define MAX_POWER_MILLIAMPS 1500
 #define MAX_POWER_VOLTS        6
@@ -52,7 +52,7 @@ void vumeter();
 void fire();
 void waterdrops();
 void level();
-
+void palette();
 
 void glow();
 //void pixels();

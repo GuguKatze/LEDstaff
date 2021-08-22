@@ -5,8 +5,9 @@ CRGB ballSprite[3];
 
 void level () {
   if(firstFrame){
+    readFromNano = true;
     FastLED.setBrightness(BRIGHTNESS);
-    msPerFrame = 25;
+    msPerFrame = 10;
   }
   FastLED.clear();
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));

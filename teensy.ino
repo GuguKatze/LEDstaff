@@ -51,6 +51,7 @@ unsigned int state = 0;
 unsigned long lastImpulse = 0;
 unsigned long lastEffectChange = 0;
 unsigned long lastImpulseDecrease = 0;
+unsigned long lastWireTime = 0;
 
 bool boolImpulse = true;
 uint8_t impulseCount = 0;
@@ -129,11 +130,13 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {glow};
 //SimplePatternList gPatterns = {fire};
 //SimplePatternList gPatterns = {waterdrops};
-//SimplePatternList gPatterns = {level};
+SimplePatternList gPatterns = {level};
 //SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {snowflakes};
 //SimplePatternList gPatterns = {snowflakes, pixels2};
-SimplePatternList gPatterns = {binaryCounter};
+//SimplePatternList gPatterns = {binaryCounter};
+// SimplePatternList gPatterns = {palette};
+//SimplePatternList gPatterns = {strobo};
 
 //////////
 // loop //
@@ -143,6 +146,7 @@ void loop() {
     lastEffectChange = millis();
     Serial.println("Changing effect ...");
     firstFrame = true;
+    readFromNano = false;
     gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
   }
   if(millis() - lastImpulseDecrease > 1000){
@@ -151,17 +155,16 @@ void loop() {
       impulseCount--;
     }
   }
-  if(readFromNano){
-    EVERY_N_MILLISECONDS(250){
-      unsigned long wireStartTime = millis();
-      Wire.requestFrom(0x40, sizeof(vu.bytes));
-      //    Serial.print((char)Wire.peek());
-      if (Wire.available()) {
-        int i = 0; while(Wire.available()) { vu.bytes[i] = Wire.read(); i++; }
-        //Serial.print("<");
-      }
-      wireDuration = millis() - wireStartTime;
+  if(readFromNano && millis() - lastWireTime > 50){
+    lastWireTime = millis();
+    unsigned long wireStartTime = millis();
+    Wire.requestFrom(0x40, sizeof(vu.bytes));
+    //    Serial.print((char)Wire.peek());
+    if (Wire.available()) {
+      int i = 0; while(Wire.available()) { vu.bytes[i] = Wire.read(); i++; }
+      //Serial.print("<");
     }
+    wireDuration = millis() - wireStartTime;
   }
   //pitch = vu.pitch * -1;
   if(lastFrame + msPerFrame < millis()){
@@ -190,8 +193,9 @@ void frame(){
   
   // debug
   unsigned long frameDuration = millis() - lastFrame;
-  if(frameDuration > 2){ leds[frameDuration] = CRGB::Green;  }
-  if(wireDuration  > 6){ leds[wireDuration]  = CRGB::Yellow; }
+  if(frameDuration > 1){ leds[frameDuration] = CRGB::Green;  }
+  if(wireDuration  > 1){ leds[wireDuration]  = CRGB::Yellow; }
   if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
+  leds[71]  = CRGB::Pink;
   FastLED.show();
 }

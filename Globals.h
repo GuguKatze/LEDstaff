@@ -30,7 +30,8 @@ extern unsigned int state;
 int findUnused();
 void mirror();
 void flip();
-void buffer2led(unsigned int bufferOffset);
+void buffer2leds(unsigned int bufferOffset);
+void ledsTmp2leds();
 
 uint8_t iH(uint8_t);
 

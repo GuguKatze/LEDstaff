@@ -23,7 +23,9 @@ void pixels2 () {
   //fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue + 128, 255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue, 255, 255));
 
-  fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
+  //fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
+  fadeToBlackBy(bufferBig, NUM_LEDS * 3, 80);
+  
   if(random(0, beatsin16(12, 24, 256)) == 0){
     int unused = findUnused();
     if(unused != -1){
@@ -34,7 +36,7 @@ void pixels2 () {
       //Pixels[unused].velocity = random(40, 120);
       Pixels[unused].velocity = beatsin16(8, 50, 110) + random(0, 11) - 5;
       Pixels[unused].startTime = millis();
-      Pixels[unused].pixelData = CHSV(gHue + random(0, 61) - 30, 255, 255);
+      Pixels[unused].pixelData = CHSV(gHue + random(0, 41) - 20, 255, 255);
     }
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
@@ -55,8 +57,9 @@ void pixels2 () {
       Pixels[i].used = false;
     }
   }
-  memmove8(&leds[NUM_LEDS/2], &bufferBig[NUM_LEDS/2], (NUM_LEDS/2) * sizeof(CRGB));
-  for (uint8_t i=0; i<NUM_LEDS/2; i++){
-    memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));
-  }
+  buffer2leds(0);
+  //memmove8(&leds[NUM_LEDS/2], &bufferBig[NUM_LEDS/2], (NUM_LEDS/2) * sizeof(CRGB));
+  //for (uint8_t i=0; i<NUM_LEDS/2; i++){
+  //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));
+  //}
 }

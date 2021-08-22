@@ -37,9 +37,16 @@ int findUnused() {
   return -1;
 }
 
-void buffer2led(unsigned int bufferOffset){
+void buffer2leds(unsigned int bufferOffset){
   memmove8(  &leds[NUM_LEDS/2], &bufferBig[(NUM_LEDS/2)+bufferOffset], (NUM_LEDS/2) * sizeof(CRGB));
   for (uint8_t i=0; i<NUM_LEDS/2; i++){
     memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i + bufferOffset], sizeof(CRGB));
+  }
+}
+
+void ledsTmp2leds(){
+  memmove8(  &leds[NUM_LEDS/2], &ledsTmp[NUM_LEDS/2], NUM_LEDS/2 * sizeof(CRGB));
+  for (uint8_t i=0; i<NUM_LEDS/2; i++){
+    memmove8(&leds[(NUM_LEDS/2)-1-i], &ledsTmp[i], sizeof(CRGB));
   }
 }

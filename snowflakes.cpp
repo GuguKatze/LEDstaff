@@ -61,7 +61,7 @@ void snowflakes () {
  //int lowestBlockerPos = findLowestBlocker();
  //Serial.println("Highest/lowest blocking  pos: " + String(highestBlockerPos) + "/" + String(lowestBlockerPos));
  populateBlockingLookup();
- if(random(0, beatsin16(9, 25, 129)) == 0){
+ if(random(0, beatsin16(9, 32, 129)) == 0){
     int unused = findUnused();
     if(unused != -1){
       //Serial.println("Using unused index: " + String(unused));
@@ -110,8 +110,9 @@ void snowflakes () {
       Pixels[i].used = false;
     }
   }
-  memmove8(&leds[NUM_LEDS/2], &bufferBig[NUM_LEDS/2], (NUM_LEDS/2) * sizeof(CRGB));
-  for (uint8_t i=0; i<NUM_LEDS/2; i++){
-    memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));
-  }
+  buffer2leds(0);
+  //memmove8(&leds[NUM_LEDS/2], &bufferBig[NUM_LEDS/2], (NUM_LEDS/2) * sizeof(CRGB));
+  //for (uint8_t i=0; i<NUM_LEDS/2; i++){
+  //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));
+  //}
 }
