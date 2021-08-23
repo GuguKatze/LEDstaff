@@ -37,10 +37,14 @@ int findUnused() {
   return -1;
 }
 
-void buffer2leds(unsigned int bufferOffset){
+void buffer2leds(unsigned int bufferOffset, bool flip){
   memmove8(  &leds[NUM_LEDS/2], &bufferBig[(NUM_LEDS/2)+bufferOffset], (NUM_LEDS/2) * sizeof(CRGB));
-  for (uint8_t i=0; i<NUM_LEDS/2; i++){
-    memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i + bufferOffset], sizeof(CRGB));
+  if(flip){
+    for (uint8_t i=0; i<NUM_LEDS/2; i++){
+      memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i + bufferOffset], sizeof(CRGB));
+    }
+  }else{
+    memmove8(  &leds[0], &bufferBig[bufferOffset], (NUM_LEDS/2) * sizeof(CRGB));
   }
 }
 
@@ -48,5 +52,14 @@ void ledsTmp2leds(){
   memmove8(  &leds[NUM_LEDS/2], &ledsTmp[NUM_LEDS/2], NUM_LEDS/2 * sizeof(CRGB));
   for (uint8_t i=0; i<NUM_LEDS/2; i++){
     memmove8(&leds[(NUM_LEDS/2)-1-i], &ledsTmp[i], sizeof(CRGB));
+  }
+}
+
+void bar2handle(){
+  if(leds[0]){
+    fill_solid (&secondary[0], NUM_LEDS_SECONDARY/2, leds[0]);
+  }
+  if(leds[NUM_LEDS/2]){
+    fill_solid (&secondary[NUM_LEDS_SECONDARY/2], NUM_LEDS_SECONDARY/2, leds[NUM_LEDS/2]);
   }
 }

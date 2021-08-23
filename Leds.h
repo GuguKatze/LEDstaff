@@ -6,7 +6,7 @@
 #define BRIGHTNESS            40
 #define MAX_BRIGHTNESS       240 // absolute PWM
 
-#define MAX_POWER_MILLIAMPS 1500
+#define MAX_POWER_MILLIAMPS  500
 #define MAX_POWER_VOLTS        6
 //#define FRAMES_PER_SECOND 20
 
@@ -49,6 +49,7 @@ void hearts();
 void blocks();
 void police();
 void vumeter();
+void vumeter2();
 void fire();
 void waterdrops();
 void level();

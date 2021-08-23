@@ -32,6 +32,7 @@ void binaryCounter() {
         fill_solid (&bufferBig[(NUM_LEDS/2) + (i*bitWidth)], bitWidth, CHSV(  color, 255, 255));
       }
     }
+    /*
     buffer2leds((NUM_LEDS/2) - offset);
     if(up){
       offset++;
@@ -39,14 +40,11 @@ void binaryCounter() {
       offset--;
     }
     if(offset >= 72 || offset <= 0){ up = !up; }
+    */
   }
-  //buffer2led(beatsin8(16, 0, (NUM_LEDS/2)));
-  if(leds[0]){
-    fill_solid (&secondary[0], NUM_LEDS_SECONDARY/2, leds[0]);
-  }
-  if(leds[NUM_LEDS/2]){
-    fill_solid (&secondary[NUM_LEDS_SECONDARY/2], NUM_LEDS_SECONDARY/2, leds[NUM_LEDS/2]);
-  }
+  uint8_t overshoot = 36;
+  buffer2leds(beatsin8(12, 0, (NUM_LEDS/2)), true);
+  bar2handle();
 }
 
 

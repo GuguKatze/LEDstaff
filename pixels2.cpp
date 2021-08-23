@@ -57,7 +57,7 @@ void pixels2 () {
       Pixels[i].used = false;
     }
   }
-  buffer2leds(0);
+  buffer2leds(0, true);
   //memmove8(&leds[NUM_LEDS/2], &bufferBig[NUM_LEDS/2], (NUM_LEDS/2) * sizeof(CRGB));
   //for (uint8_t i=0; i<NUM_LEDS/2; i++){
   //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));

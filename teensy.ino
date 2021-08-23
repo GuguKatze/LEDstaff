@@ -39,7 +39,7 @@ Pixel Pixels[NUM_PIXELS];
 bool blockingLookup[NUM_LEDS];
 
 union vu_ vu;
-int8_t pitch;
+union I2Cdata_ I2Cdata;
 
 bool useSerial = true;
 bool ledsEnabled = true; // true;
@@ -61,7 +61,7 @@ void s3Impulse(){ Serial.println("s3"); lastImpulse = millis(); if(impulseCount 
 void s4Impulse(){ Serial.println("s4"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 4; };
 
 bool boolClear = false;
-
+//unsigned long frameCount = 0;
 unsigned long wireDuration = 0;
 unsigned long lastFrame =   0;
 unsigned int msPerFrame =  10;
@@ -87,7 +87,7 @@ void setup() {
   FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,   0,  3).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
   FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary,   3,  3).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
   FastLED.setBrightness(MAX_BRIGHTNESS); // PWM duty cycles
-  //FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
+  FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
   FastLED.setMaxRefreshRate(0);
   FastLED.clear();
   FastLED.show();
@@ -130,22 +130,23 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {glow};
 //SimplePatternList gPatterns = {fire};
 //SimplePatternList gPatterns = {waterdrops};
-SimplePatternList gPatterns = {level};
 //SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {snowflakes};
-//SimplePatternList gPatterns = {snowflakes, pixels2};
-//SimplePatternList gPatterns = {binaryCounter};
 // SimplePatternList gPatterns = {palette};
 //SimplePatternList gPatterns = {strobo};
+//SimplePatternList gPatterns = {level};
+//SimplePatternList gPatterns = {binaryCounter, pixels2, snowflakes};
+SimplePatternList gPatterns = {vumeter2};
 
 //////////
 // loop //
 //////////
 void loop() {
-  if(millis() - lastEffectChange > 1000 * 60 * 10){
+  if(millis() - lastEffectChange > 1000 * 60 * 1){
     lastEffectChange = millis();
     Serial.println("Changing effect ...");
     firstFrame = true;
+    //frameCount = 0;
     readFromNano = false;
     gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
   }
@@ -155,21 +156,25 @@ void loop() {
       impulseCount--;
     }
   }
-  if(readFromNano && millis() - lastWireTime > 50){
+  if(readFromNano && millis() - lastWireTime > 20){
     lastWireTime = millis();
     unsigned long wireStartTime = millis();
-    Wire.requestFrom(0x40, sizeof(vu.bytes));
+    //Wire.requestFrom(0x40, sizeof(vu.bytes));
+    Wire.requestFrom(0x40, sizeof(I2Cdata.bytes));
     //    Serial.print((char)Wire.peek());
+     Serial.println("?");
     if (Wire.available()) {
-      int i = 0; while(Wire.available()) { vu.bytes[i] = Wire.read(); i++; }
-      //Serial.print("<");
+      int i = 0; while(Wire.available()) { I2Cdata.bytes[i] = Wire.read(); i++; }
+      Serial.println("<");
     }
+    memcpy8(&vu.bytes[0], &I2Cdata.bytes[0], sizeof vu.bytes); // copy vu data from the I2C union over to the vu union
     wireDuration = millis() - wireStartTime;
   }
   //pitch = vu.pitch * -1;
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
     frame();
+    //frameCount++;
   }
 }
 void frame(){
@@ -193,9 +198,10 @@ void frame(){
   
   // debug
   unsigned long frameDuration = millis() - lastFrame;
-  if(frameDuration > 1){ leds[frameDuration] = CRGB::Green;  }
-  if(wireDuration  > 1){ leds[wireDuration]  = CRGB::Yellow; }
-  if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
-  leds[71]  = CRGB::Pink;
+  
+  //if(frameDuration > 2){ leds[frameDuration] = CRGB::Green;  }
+  //if(wireDuration  > 2){ leds[wireDuration]  = CRGB::Yellow; }
+  //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
+  leds[71]  = CHSV( 64, 255, 64);
   FastLED.show();
 }

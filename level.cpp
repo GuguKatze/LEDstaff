@@ -12,11 +12,11 @@ void level () {
   FastLED.clear();
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue + 128, 255, 255));
-  if(vu.pitch < -5 && ballVelocity > -10 && ball > 1){
+  if(I2Cdata.pitch < -5 && ballVelocity > -10 && ball > 1){
     ballVelocity--;
-  }else if(vu.pitch > 5 && ballVelocity < 10 && ball  < 142){
+  }else if(I2Cdata.pitch > 5 && ballVelocity < 10 && ball  < 142){
     ballVelocity++;
-  }else if(vu.pitch <= 5 && vu.pitch >= -5){ // bring ball to standstill if vu.pitch is low
+  }else if(I2Cdata.pitch <= 5 && I2Cdata.pitch >= -5){ // bring ball to standstill if vu.pitch is low
     if(ballVelocity < -1){
       ballVelocity++;
     }else if(ballVelocity > 1){
@@ -31,7 +31,7 @@ void level () {
     ball--;
   }
   
-  Serial.println(String(vu.pitch) + " ---> " + String(ball));
+  Serial.println(String(I2Cdata.pitch) + " ---> " + String(ball));
 
   ballSprite[0] = CHSV( gHue, 255, 160);
   ballSprite[1] = CHSV( gHue, 255, 255);
