@@ -134,15 +134,17 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {snowflakes};
 // SimplePatternList gPatterns = {palette};
 //SimplePatternList gPatterns = {strobo};
-//SimplePatternList gPatterns = {level};
-//SimplePatternList gPatterns = {binaryCounter, pixels2, snowflakes};
-SimplePatternList gPatterns = {vumeter2};
+SimplePatternList gPatterns = {level};
+
+//SimplePatternList gPatterns = {vumeter2, binaryCounter};
+//SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
+
 
 //////////
 // loop //
 //////////
 void loop() {
-  if(millis() - lastEffectChange > 1000 * 60 * 1){
+  if(millis() - lastEffectChange > 1000 * 60 * 0.5){
     lastEffectChange = millis();
     Serial.println("Changing effect ...");
     firstFrame = true;
@@ -162,10 +164,10 @@ void loop() {
     //Wire.requestFrom(0x40, sizeof(vu.bytes));
     Wire.requestFrom(0x40, sizeof(I2Cdata.bytes));
     //    Serial.print((char)Wire.peek());
-     Serial.println("?");
+     //Serial.println("?");
     if (Wire.available()) {
       int i = 0; while(Wire.available()) { I2Cdata.bytes[i] = Wire.read(); i++; }
-      Serial.println("<");
+      //Serial.println("<");
     }
     memcpy8(&vu.bytes[0], &I2Cdata.bytes[0], sizeof vu.bytes); // copy vu data from the I2C union over to the vu union
     wireDuration = millis() - wireStartTime;
@@ -202,6 +204,6 @@ void frame(){
   //if(frameDuration > 2){ leds[frameDuration] = CRGB::Green;  }
   //if(wireDuration  > 2){ leds[wireDuration]  = CRGB::Yellow; }
   //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
-  leds[71]  = CHSV( 64, 255, 64);
+  //leds[71]  = CHSV( 64, 255, 64);
   FastLED.show();
 }

@@ -9,16 +9,17 @@ uint8_t offset = 0;
 unsigned short bitsToUse = 12;
 unsigned short bitWidth = 6;
 
-unsigned long nextBinaryCounter;
+unsigned long lastBinaryCounter = 0;
 
 void binaryCounter() {
  if(firstFrame){
     FastLED.setBrightness(BRIGHTNESS);
     msPerFrame = 10;
+    lastBinaryCounter = 0;
   }
   //FastLED.clear();
-  if(millis() > nextBinaryCounter){
-    nextBinaryCounter = nextBinaryCounter + 1000;
+  if(millis() - lastBinaryCounter > 1000){
+    lastBinaryCounter = millis();
     fill_solid (&bufferBig[0], NUM_LEDS*3, CHSV(  0, 0, 0));
     int long seconds = millis() / 1000;
     //seconds = random(255);

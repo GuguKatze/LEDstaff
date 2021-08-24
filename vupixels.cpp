@@ -1,7 +1,8 @@
 #include "Globals.h"
 
-void pixels2 () {
+void vupixels () {
   if(firstFrame){
+    readFromNano = true;
     FastLED.setBrightness(MAX_BRIGHTNESS);
     msPerFrame = 10;
     fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
@@ -18,9 +19,9 @@ void pixels2 () {
   }
   //FastLED.setBrightness(beatsin16(20, 32, 64));
   EVERY_N_MILLISECONDS(120){ gHue++; }
+  
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue, 255, 255));
-
   //fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
   fadeToBlackBy(bufferBig, NUM_LEDS * 3, 80);
   
