@@ -1,9 +1,9 @@
 #include "Globals.h"
-int fLeft[7];
-int fRight[7];
+
 
 int maxLenLeft[7];
 int maxLenRight[7];
+
 unsigned long maxLenTimeLeft[7];
 unsigned long maxLenTimeRight[7];
 unsigned long maxReductionTime = 0;
@@ -19,20 +19,23 @@ void vumeter2 () {
   
   fadeToBlackBy(leds, NUM_LEDS, 64);
   
-  for(int i=0;i<7;i++){
-    fLeft[i]  = 0.75 *  fLeft[i] + 0.25 *  vu.left[i];
-    fRight[i] = 0.75 * fRight[i] + 0.25 * vu.right[i];
-    
+  for(int i=0;i<7;i++){   
     uint8_t  color   = map( i, 0, 6, 224, 0);
-    
-    uint8_t lenLeft  = map(  fLeft[i], 0, 255, 0, 10);
-    uint8_t lenRight = map( fRight[i], 0, 255, 0, 10);
 
+    uint8_t lenLeft  = map(  constrain(  vu.left[i] -  filteredLeftSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
+    uint8_t lenRight = map(  constrain( vu.right[i] - filteredRightSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
+    
+    //uint8_t lenLeft  = map(  constrain( filteredLeftFast[i] -  filteredLeftSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
+    //uint8_t lenRight = map(  constrain(filteredRightFast[i] - filteredRightSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
+    
+    //uint8_t lenLeft  = map(  filteredLeftFast[i], 0, 255, 0, 10);
+    //uint8_t lenRight = map( filteredRightFast[i], 0, 255, 0, 10);
+  
     if(lenLeft  >  maxLenLeft[i]){ maxLenLeft[i] =  lenLeft;  maxLenTimeLeft[i] = millis(); };
     if(lenRight > maxLenRight[i]){ maxLenRight[i] = lenRight; maxLenTimeRight[i] = millis(); };
     
-    uint8_t satLeft  = map(  fLeft[i], 0, 255, 16, 255);
-    uint8_t satRight = map( fRight[i], 0, 255, 16, 255);
+    uint8_t satLeft  = map(  filteredLeftFast[i], 0, 255, 16, 255);
+    uint8_t satRight = map( filteredRightFast[i], 0, 255, 16, 255);
 
     //leds[72 + lenLeft] = CHSV( color, 255, 255);
     //leds[lenRight]     = CHSV( color, 255, 255); 

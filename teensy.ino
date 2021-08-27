@@ -52,6 +52,8 @@ unsigned long lastImpulse = 0;
 unsigned long lastEffectChange = 0;
 unsigned long lastImpulseDecrease = 0;
 unsigned long lastWireTime = 0;
+bool vuChange = false;
+bool vuSignal = false;
 
 bool boolImpulse = true;
 uint8_t impulseCount = 0;
@@ -59,6 +61,7 @@ void s1Impulse(){ Serial.println("s1"); lastImpulse = millis(); if(impulseCount 
 void s2Impulse(){ Serial.println("s2"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 2; };
 void s3Impulse(){ Serial.println("s3"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 3; };
 void s4Impulse(){ Serial.println("s4"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 4; };
+void vuImpulse(){ vuSignal = !digitalRead(5); vuChange = true; };
 
 bool boolClear = false;
 //unsigned long frameCount = 0;
@@ -66,7 +69,13 @@ unsigned long wireDuration = 0;
 unsigned long lastFrame =   0;
 unsigned int msPerFrame =  10;
 
-void frame();
+//void frame();
+
+// vu data
+float  filteredLeftFast[7];
+float filteredRightFast[7];
+float  filteredLeftSlow[7];
+float filteredRightSlow[7];
 
 void receiveEvent(int howMany)
 {
@@ -93,7 +102,8 @@ void setup() {
   FastLED.show();
 
   Wire.begin(); 
-
+  Wire.setClock(1000000);
+ 
   //if(!SD.begin()){
   //  if(useSerial){ Serial.println("SD failed ..."); };
   //} else {
@@ -113,7 +123,7 @@ void setup() {
   pinMode(2, INPUT_PULLUP); // reserved
   pinMode(3, INPUT_PULLUP); // reserved
   pinMode(4, INPUT_PULLUP); // reserved
-  pinMode(5, INPUT_PULLUP); // reserved
+  pinMode(5, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(5), vuImpulse, CHANGE);
   pinMode(6, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(6), s4Impulse, FALLING);
   pinMode(7, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(7), s3Impulse, FALLING);
   pinMode(8, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(8), s2Impulse, FALLING);
@@ -126,30 +136,25 @@ uint8_t gCurrentPatternNumber = 0;
 typedef void (*SimplePatternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
-//SimplePatternList gPatterns = {neontube, blocks, binaryCounter, glow};
-//SimplePatternList gPatterns = {glow};
-//SimplePatternList gPatterns = {fire};
-//SimplePatternList gPatterns = {waterdrops};
-//SimplePatternList gPatterns = {pixels2};
-//SimplePatternList gPatterns = {snowflakes};
-// SimplePatternList gPatterns = {palette};
-//SimplePatternList gPatterns = {strobo};
-SimplePatternList gPatterns = {level};
-
-//SimplePatternList gPatterns = {vumeter2, binaryCounter};
+SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
-
 
 //////////
 // loop //
 //////////
 void loop() {
-  if(millis() - lastEffectChange > 1000 * 60 * 0.5){
+  if(vuChange){ Serial.println("--- VU CHANGE ---"); }
+  if(vuChange || millis() - lastEffectChange > 1000 * 60 * 0.5){
+    if(vuChange){ vuChange = false; };
     lastEffectChange = millis();
     Serial.println("Changing effect ...");
     firstFrame = true;
     //frameCount = 0;
-    readFromNano = false;
+    if(vuChange && vuSignal){
+      readFromNano = true;
+    }else{
+      readFromNano = false;
+    }
     gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
   }
   if(millis() - lastImpulseDecrease > 1000){
@@ -158,21 +163,22 @@ void loop() {
       impulseCount--;
     }
   }
-  if(readFromNano && millis() - lastWireTime > 20){
+  if(readFromNano && millis() - lastWireTime > 50){
     lastWireTime = millis();
     unsigned long wireStartTime = millis();
     //Wire.requestFrom(0x40, sizeof(vu.bytes));
     Wire.requestFrom(0x40, sizeof(I2Cdata.bytes));
     //    Serial.print((char)Wire.peek());
-     //Serial.println("?");
+    Serial.print("?");
+    //leds[19] = CRGB::Orange;
     if (Wire.available()) {
       int i = 0; while(Wire.available()) { I2Cdata.bytes[i] = Wire.read(); i++; }
       //Serial.println("<");
     }
     memcpy8(&vu.bytes[0], &I2Cdata.bytes[0], sizeof vu.bytes); // copy vu data from the I2C union over to the vu union
+    vuFilter();
     wireDuration = millis() - wireStartTime;
   }
-  //pitch = vu.pitch * -1;
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
     frame();
@@ -182,11 +188,11 @@ void loop() {
 void frame(){
   // THIS IS JUST THE BEGINNING
   /////////////////////////////
-  //gPatterns[gCurrentPatternNumber]();
-  if(impulseCount <= 4){
+  if(vuSignal){
+    vumeter2(); 
+  }else if(impulseCount <= 4){
      gPatterns[gCurrentPatternNumber](); 
   }else{
-    //vumeter();
     binaryCounter();
   }
   firstFrame = false;
@@ -201,9 +207,11 @@ void frame(){
   // debug
   unsigned long frameDuration = millis() - lastFrame;
   
-  //if(frameDuration > 2){ leds[frameDuration] = CRGB::Green;  }
-  //if(wireDuration  > 2){ leds[wireDuration]  = CRGB::Yellow; }
+  if(frameDuration > 2){ if(frameDuration > 60){ frameDuration = 60; }; leds[frameDuration] = CRGB::Green;  }
+  if(wireDuration  > 2){ if(wireDuration  > 60){ wireDuration  = 60; };  leds[wireDuration] = CRGB::Yellow; }
   //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
+  if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
+  if(vuSignal){ leds[20] = CRGB::Green; } else { leds[20] = CRGB::Red; }
   //leds[71]  = CHSV( 64, 255, 64);
   FastLED.show();
 }

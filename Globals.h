@@ -28,7 +28,7 @@ extern unsigned int msPerFrame;
 extern unsigned int state;
 
 //extern unsigned long frameCount;
-
+void vuFilter();
 int findUnused();
 void mirror();
 void flip();
@@ -71,3 +71,8 @@ typedef struct Pixel {
 
 #define NUM_PIXELS 100
 extern Pixel Pixels[NUM_PIXELS];
+
+extern float filteredLeftFast[7];
+extern float filteredRightFast[7];
+extern float filteredLeftSlow[7];
+extern float filteredRightSlow[7];

@@ -27,7 +27,7 @@ void pixels2 () {
   if(random(0, beatsin16(12, 24, 256)) == 0){
     int unused = findUnused();
     if(unused != -1){
-      Serial.println("Using unused index: " + String(unused));
+      //Serial.println("Using unused index: " + String(unused));
       Pixels[unused].used = true;
       Pixels[unused].ledPos = 72;
       Pixels[unused].gravity = random(800, 900) / 1000.0;
@@ -39,7 +39,7 @@ void pixels2 () {
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
     if (!Pixels[i].used){ continue; }
-    Serial.println("Drawing index: " + String(i));
+    //Serial.println("Drawing index: " + String(i));
     int ledPos = (int) Pixels[i].ledPos;
     bufferBig[ledPos] = Pixels[i].pixelData;
     //if(millis() - Pixels[i].startTime > 1000){
