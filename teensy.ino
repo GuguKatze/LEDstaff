@@ -1,6 +1,11 @@
 #include "Globals.h"
 #include "Leds.h"
 #include "Image.h"
+#include "Effect.h"
+
+#include <stdlib.h> // for malloc and free
+//void* operator new(size_t size) { return malloc(size); }
+//void operator delete(void* ptr) { free(ptr); } 
 
 // https://github.com/Richard-Gemmell/teensy4_i2c
 // | Port | Pins               | imx_rt1060_i2c_driver.h | i2c_driver_wire.h |
@@ -10,6 +15,8 @@
 // | 2    | SCL2(24), SDA2(25) | Master2 or Slave2 | Wire2 |
 #include <i2c_driver.h>
 #include <i2c_driver_wire.h>
+
+Effect* ptrEffect = NULL;
 
 void receiveEvent(int howMany);
 
@@ -77,6 +84,10 @@ float filteredRightFast[7];
 float  filteredLeftSlow[7];
 float filteredRightSlow[7];
 
+//Obj effect;
+
+
+
 void receiveEvent(int howMany)
 {
   while(Wire.available() > 0) {
@@ -136,19 +147,30 @@ uint8_t gCurrentPatternNumber = 0;
 typedef void (*SimplePatternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
-SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
+
+SimplePatternList gPatterns = {pixels2};
+//SimplePatternList gPatterns = {binaryCounter};
+//SimplePatternList gPatterns = {lavalamp};
+//SimplePatternList gPatterns = {blocks};
 
 //////////
 // loop //
 //////////
 void loop() {
-  if(vuChange){ Serial.println("--- VU CHANGE ---"); }
-  if(vuChange || millis() - lastEffectChange > 1000 * 60 * 0.5){
+  //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
+  if(vuChange || millis() - lastEffectChange > 1000 * 60 * 0.25){
+    
+    ptrEffect = new Effect();
+    ptrEffect->init();
+    
+    firstFrame = true;
+    FastLED.setBrightness(MAX_BRIGHTNESS);
+    FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
     if(vuChange){ vuChange = false; };
     lastEffectChange = millis();
     Serial.println("Changing effect ...");
-    firstFrame = true;
+    
     //frameCount = 0;
     if(vuChange && vuSignal){
       readFromNano = true;
@@ -186,18 +208,28 @@ void loop() {
   }
 }
 void frame(){
-  // THIS IS JUST THE BEGINNING
-  /////////////////////////////
+  
+  ////////////////////////////////
+  // THIS IS JUST THE BEGINNING //
+  ////////////////////////////////
+
+  //ptrEffect->runPattern();
+  //ptrEffect->runPattern();
+  //pixels2();
+
   if(vuSignal){
-    vumeter2(); 
+    vumeter2();
   }else if(impulseCount <= 4){
      gPatterns[gCurrentPatternNumber](); 
   }else{
     binaryCounter();
   }
-  firstFrame = false;
-  //////////////////
-  // THIS IS THE END
+ 
+  firstFrame = false; 
+  /////////////////////
+  // THIS IS THE END //
+  /////////////////////
+  
   if(!ledsEnabled){
     FastLED.clear();
   }
@@ -207,11 +239,11 @@ void frame(){
   // debug
   unsigned long frameDuration = millis() - lastFrame;
   
-  if(frameDuration > 2){ if(frameDuration > 60){ frameDuration = 60; }; leds[frameDuration] = CRGB::Green;  }
-  if(wireDuration  > 2){ if(wireDuration  > 60){ wireDuration  = 60; };  leds[wireDuration] = CRGB::Yellow; }
+  if(frameDuration > 2) { if(frameDuration > 60){ frameDuration = 60; }; leds[frameDuration] = CRGB::Green;  }
+  if(wireDuration  > 16){ if(wireDuration  > 60){ wireDuration  = 60; };  leds[wireDuration] = CRGB::Yellow; }
   //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
-  if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
-  if(vuSignal){ leds[20] = CRGB::Green; } else { leds[20] = CRGB::Red; }
+  //if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
+  //if(vuSignal){ leds[20] = CRGB::Green; } else { leds[20] = CRGB::Red; }
   //leds[71]  = CHSV( 64, 255, 64);
   FastLED.show();
 }

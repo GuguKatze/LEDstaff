@@ -1,4 +1,5 @@
 #pragma once
+#include <Arduino.h>
 #include "Leds.h"
 //#include <Wire.h>
 //#define SCL A3
@@ -33,6 +34,9 @@ int findUnused();
 void mirror();
 void flip();
 void buffer2leds(unsigned int bufferOffset, bool flip);
+
+void b2l(unsigned int bufferIndex, unsigned int ledsIndex, unsigned int numberOfLeds, bool flip);
+
 void bar2handle();
 void ledsTmp2leds();
 

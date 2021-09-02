@@ -48,6 +48,17 @@ void buffer2leds(unsigned int bufferOffset, bool flip){
   }
 }
 
+
+void b2l(unsigned int bufferIndex, unsigned int ledsIndex, unsigned int numberOfLeds, bool flip){
+  if(flip){
+    for (uint8_t i=0; i<numberOfLeds; i++){
+      memmove8(&leds[ledsIndex+numberOfLeds-1-i], &bufferBig[bufferIndex +i], sizeof(CRGB));
+    }
+  }else{
+    memmove8(  &leds[ledsIndex], &bufferBig[bufferIndex], numberOfLeds * sizeof(CRGB));
+  }
+}
+
 void ledsTmp2leds(){
   memmove8(  &leds[NUM_LEDS/2], &ledsTmp[NUM_LEDS/2], NUM_LEDS/2 * sizeof(CRGB));
   for (uint8_t i=0; i<NUM_LEDS/2; i++){

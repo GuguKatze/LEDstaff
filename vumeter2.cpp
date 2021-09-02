@@ -8,46 +8,30 @@ unsigned long maxLenTimeLeft[7];
 unsigned long maxLenTimeRight[7];
 unsigned long maxReductionTime = 0;
 
+bool extending = false;
+uint8_t hiddenAmount = NUM_LEDS / 2;
+
 void vumeter2 () {
   if(firstFrame){
     readFromNano = true;
+    extending = true;
+    hiddenAmount = NUM_LEDS / 2;
     FastLED.setBrightness(MAX_BRIGHTNESS);
     msPerFrame = 10;
   }
-  //fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
-  //fadeToBlackBy(bufferBig, NUM_LEDS * 3, 80);
-  
-  fadeToBlackBy(leds, NUM_LEDS, 64);
-  
+  fadeToBlackBy(bufferBig, NUM_LEDS * 3, 64);
   for(int i=0;i<7;i++){   
     uint8_t  color   = map( i, 0, 6, 224, 0);
-
-    uint8_t lenLeft  = map(  constrain(  vu.left[i] -  filteredLeftSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
-    uint8_t lenRight = map(  constrain( vu.right[i] - filteredRightSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
-    
-    //uint8_t lenLeft  = map(  constrain( filteredLeftFast[i] -  filteredLeftSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
-    //uint8_t lenRight = map(  constrain(filteredRightFast[i] - filteredRightSlow[i] * 0.20, 0, 255), 0, 255, 0, 10);
-    
-    //uint8_t lenLeft  = map(  filteredLeftFast[i], 0, 255, 0, 10);
-    //uint8_t lenRight = map( filteredRightFast[i], 0, 255, 0, 10);
-  
+    uint8_t lenLeft  = map(  constrain(  vu.left[i] -  filteredLeftSlow[i] * 0.30, 0, 200), 0, 200, 0, 10);
+    uint8_t lenRight = map(  constrain( vu.right[i] - filteredRightSlow[i] * 0.30, 0, 200), 0, 200, 0, 10); 
     if(lenLeft  >  maxLenLeft[i]){ maxLenLeft[i] =  lenLeft;  maxLenTimeLeft[i] = millis(); };
     if(lenRight > maxLenRight[i]){ maxLenRight[i] = lenRight; maxLenTimeRight[i] = millis(); };
-    
     uint8_t satLeft  = map(  filteredLeftFast[i], 0, 255, 16, 255);
     uint8_t satRight = map( filteredRightFast[i], 0, 255, 16, 255);
-
-    //leds[72 + lenLeft] = CHSV( color, 255, 255);
-    //leds[lenRight]     = CHSV( color, 255, 255); 
-     
-     fill_solid(&leds[72 + i * 10], lenLeft , CHSV( color, 255, satLeft));
-     if(maxLenLeft[i] > 1){ leds[72 + i * 10 + maxLenLeft[i]] = CHSV(color, 128, 64); };
-     
-     fill_solid(&leds[     i * 10], lenRight, CHSV( color, 255, satRight));
-     if(maxLenRight[i] > 1){ leds[     i * 10 + maxLenRight[i]] = CHSV(color, 128, 64); };
-     
-    //bufferBig[72 + lenLeft] = CHSV( color, 255, 255);
-    //bufferBig[lenRight]     = CHSV( color, 255, 255);
+    fill_solid(            &bufferBig[NUM_LEDS     + i * 10], lenLeft , CHSV( color, 255, satLeft));
+    if(maxLenLeft[i] > 1){  bufferBig[NUM_LEDS     + i * 10 + maxLenLeft[i]] = CHSV(color, 128, 64); };
+    fill_solid(            &bufferBig[NUM_LEDS * 2 + i * 10], lenRight, CHSV( color, 255, satRight));
+    if(maxLenRight[i] > 1){ bufferBig[NUM_LEDS * 2 + i * 10 + maxLenRight[i]] = CHSV(color, 128, 64); };
   }
   if(millis() - maxReductionTime > 150){
     maxReductionTime = millis();
@@ -56,6 +40,12 @@ void vumeter2 () {
       if(maxLenRight[i] > 0 && millis() - maxLenTimeRight[i] > 150){ maxLenRight[i] = maxLenRight[i] - 1; };
     }
   }
+  uint8_t index = 0;
+  //b2l(NUM_LEDS + index             ,            0, NUM_LEDS/2, false);  //  0 ->  71
+  //b2l(NUM_LEDS + index + NUM_LEDS/2,   NUM_LEDS/2, NUM_LEDS/2, false); // 72 -> 143
+
+  hiddenAmount = beatsin16(16, 0, NUM_LEDS / 2 - 32);
+  b2l(NUM_LEDS     + hiddenAmount,          0, NUM_LEDS/2, false);  //  0 ->  71
+  b2l(NUM_LEDS * 2 + hiddenAmount, NUM_LEDS/2, NUM_LEDS/2, false); // 72 -> 143
   bar2handle();
-  //buffer2leds(0, false);
 }

@@ -6,8 +6,8 @@
 #define BRIGHTNESS            40
 #define MAX_BRIGHTNESS       240 // absolute PWM
 
-#define MAX_POWER_MILLIAMPS  500
-#define MAX_POWER_VOLTS        6
+#define MAX_POWER_MILLIAMPS  660
+#define MAX_POWER_VOLTS        5
 //#define FRAMES_PER_SECOND 20
 
 //#define FASTLED_ALLOW_INTERRUPTS 0
@@ -59,3 +59,4 @@ void glow();
 //void pixels();
 void pixels2();
 void snowflakes();
+void lavalamp();
