@@ -149,28 +149,28 @@ typedef void (*SimplePatternList[])();
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
 
-SimplePatternList gPatterns = {pixels2};
+//SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {binaryCounter};
 //SimplePatternList gPatterns = {lavalamp};
-//SimplePatternList gPatterns = {blocks};
+SimplePatternList gPatterns = {blocks};
 
 //////////
 // loop //
 //////////
 void loop() {
   //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
-  if(vuChange || millis() - lastEffectChange > 1000 * 60 * 0.25){
-    
+  if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 60 * 0.25)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
+    Serial.println("Changing effect ...");    
     ptrEffect = new Effect();
     ptrEffect->init();
-    
+
+    lastEffectChange = millis();
     firstFrame = true;
+    if(vuChange){ vuChange = false; };
+
     FastLED.setBrightness(MAX_BRIGHTNESS);
     FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
-    if(vuChange){ vuChange = false; };
-    lastEffectChange = millis();
-    Serial.println("Changing effect ...");
-    
+   
     //frameCount = 0;
     if(vuChange && vuSignal){
       readFromNano = true;
