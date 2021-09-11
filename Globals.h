@@ -23,6 +23,10 @@ extern bool readFromNano;
 //extern bool mirror;
 extern uint8_t gHue;
 extern unsigned int msPerFrame;
+extern unsigned long fCount;
+
+//extern uint8_t msPerHue;
+//extern uint8_t hueIncrement;
 //extern unsigned long 
 //extern unsigned long pixelNextUpdateTime;
 

@@ -45,6 +45,7 @@ void vumeter2 () {
   //b2l(NUM_LEDS + index + NUM_LEDS/2,   NUM_LEDS/2, NUM_LEDS/2, false); // 72 -> 143
 
   hiddenAmount = beatsin16(16, 0, NUM_LEDS / 2 - 32);
+  hiddenAmount = 0;
   b2l(NUM_LEDS     + hiddenAmount,          0, NUM_LEDS/2, false);  //  0 ->  71
   b2l(NUM_LEDS * 2 + hiddenAmount, NUM_LEDS/2, NUM_LEDS/2, false); // 72 -> 143
   bar2handle();

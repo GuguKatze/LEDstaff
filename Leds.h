@@ -27,6 +27,11 @@
 FASTLED_USING_NAMESPACE
 
 // effects
+
+// idle
+void idleRotation();
+void idleFluorescentTube();
+
 void blendwave();
 void beatwave();
 void beatwaveSetup();
@@ -38,10 +43,11 @@ void plasmaWrapper();
 
 void secondaryL();
 
-
+void rainbowSin();
 void binaryCounter();
 void blendWave();
 void rainbow();
+
 
 void neontube();
 void strobo();

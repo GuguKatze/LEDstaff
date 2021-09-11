@@ -50,7 +50,16 @@ union I2Cdata_ I2Cdata;
 
 bool useSerial = true;
 bool ledsEnabled = true; // true;
+
 uint8_t gHue = 0;
+//unsigned long lastHue   =   0;
+//uint8_t hueIncrement = 1;
+//uint8_t msPerHue = 10;
+
+unsigned int msPerFrame =  10;
+unsigned long lastFrame =   0;
+unsigned long fCount = 0;
+
 bool firstFrame = true; // set for the first frame of an effect
 bool readFromNano = false;
 
@@ -73,8 +82,8 @@ void vuImpulse(){ vuSignal = !digitalRead(5); vuChange = true; };
 bool boolClear = false;
 //unsigned long frameCount = 0;
 unsigned long wireDuration = 0;
-unsigned long lastFrame =   0;
-unsigned int msPerFrame =  10;
+
+
 
 //void frame();
 
@@ -152,20 +161,24 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {pixels2};
 //SimplePatternList gPatterns = {binaryCounter};
 //SimplePatternList gPatterns = {lavalamp};
-SimplePatternList gPatterns = {blocks};
+//SimplePatternList gPatterns = {blocks};
+//SimplePatternList gPatterns = {rainbowSin};
+//SimplePatternList gPatterns = {idleFluorescentTube, idleRotation};
+SimplePatternList gPatterns = {idleFluorescentTube};
 
 //////////
 // loop //
 //////////
 void loop() {
   //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
-  if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 60 * 0.25)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
+  if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 60 * 0.5)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
     Serial.println("Changing effect ...");    
     ptrEffect = new Effect();
     ptrEffect->init();
 
     lastEffectChange = millis();
     firstFrame = true;
+    fCount = 0;
     if(vuChange){ vuChange = false; };
 
     FastLED.setBrightness(MAX_BRIGHTNESS);
@@ -201,10 +214,14 @@ void loop() {
     vuFilter();
     wireDuration = millis() - wireStartTime;
   }
+  //if(lastHue + msPerHue < millis()){
+  //  lastHue = millis();
+  //  gHue += hueIncrement;
+  //}
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
     frame();
-    //frameCount++;
+    fCount++;
   }
 }
 void frame(){

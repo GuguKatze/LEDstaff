@@ -3,11 +3,11 @@
 bool up = true;
 uint8_t offset = 0;
 
-//unsigned short bitsToUse = 8;
-//unsigned short bitWidth = 9;
+unsigned short bitsToUse = 8;
+unsigned short bitWidth = 9;
 
-unsigned short bitsToUse = 12;
-unsigned short bitWidth = 6;
+//unsigned short bitsToUse = 12;
+//unsigned short bitWidth = 6;
 
 unsigned long lastBinaryCounter = 0;
 
@@ -18,13 +18,14 @@ void binaryCounter() {
     lastBinaryCounter = 0;
   }
   //FastLED.clear();
-  if(millis() - lastBinaryCounter > 1000){
+  if(millis() - lastBinaryCounter > 50){
     lastBinaryCounter = millis();
     fill_solid (&bufferBig[0], NUM_LEDS*3, CHSV(  0, 0, 0));
     int long seconds = millis() / 1000;
     //seconds = random(255);
     for(int i = 0; i < bitsToUse; i++){
-      unsigned int color = map(i, 0, bitsToUse, 224, 0);
+      //unsigned int color = map(i, 0, bitsToUse, 224, 0);
+      unsigned int color = map(i, 0, bitsToUse, gHue, gHue+64);
       byte bit = bitRead(seconds, i);
       if(bit == 0){
         bufferBig[NUM_LEDS + (i*bitWidth)] = CHSV( color, 255, 128);
@@ -46,10 +47,11 @@ void binaryCounter() {
   uint8_t overshoot = 36;
   //buffer2leds(beatsin8(4, NUM_LEDS/2, NUM_LEDS), true); // half scroll
   //buffer2leds(beatsin16(4, 0, NUM_LEDS * 1.5), true); // full scroll
-  uint8_t index = beatsin16(8, NUM_LEDS/2, NUM_LEDS);
+  uint8_t index = beatsin16(6, NUM_LEDS/2, NUM_LEDS);
   b2l(index             ,            0, NUM_LEDS/2, true);  //  0 ->  71
   b2l(index + NUM_LEDS/2,   NUM_LEDS/2, NUM_LEDS/2, false); // 72 -> 143
   bar2handle();
+  gHue+=1;
 }
 
 
