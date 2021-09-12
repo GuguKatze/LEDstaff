@@ -77,7 +77,7 @@ typedef struct Pixel {
   bool blocking;
 } Pixel;
 
-#define NUM_PIXELS 100
+#define NUM_PIXELS 64
 extern Pixel Pixels[NUM_PIXELS];
 
 extern float filteredLeftFast[7];

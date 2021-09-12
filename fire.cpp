@@ -1,13 +1,13 @@
 #include "Globals.h"
 // Less cooling = taller flames.  More cooling = shorter flames.
 // Default 50, suggested range 20-100 
-#define COOLING  104
+#define COOLING  160
 // SPARKING: What chance (out of 255) is there that a new spark will be lit?
 // Higher chance = more roaring fire.  Lower chance = more flickery fire.
 // Default 120, suggested range 50-200.
-#define SPARKING 75
+#define SPARKING 50
 
-bool gReverseDirection = false;
+bool gReverseDirection_ = false;
 
 CRGB foob( uint8_t temperature)
 {
@@ -85,7 +85,7 @@ void fire () {
       //CHSV colorLow = CHSV( heatLow[j], 255, 255);
       CRGB colorHigh = HeatColor( heatHigh[j]);
       int pixelnumber;
-      if( gReverseDirection ) {
+      if( gReverseDirection_ ) {
         pixelnumber = ((NUM_LEDS / 2) -1) - j;
       } else {
         pixelnumber = j;

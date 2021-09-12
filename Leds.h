@@ -32,6 +32,12 @@ FASTLED_USING_NAMESPACE
 void idleRotation();
 void idleFluorescentTube();
 
+// effects
+void effectFire();
+void effectPixels();
+
+// rotation
+
 void blendwave();
 void beatwave();
 void beatwaveSetup();
@@ -63,6 +69,5 @@ void palette();
 
 void glow();
 //void pixels();
-void pixels2();
 void snowflakes();
 void lavalamp();

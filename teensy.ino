@@ -158,13 +158,14 @@ typedef void (*SimplePatternList[])();
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
 
-//SimplePatternList gPatterns = {pixels2};
+//SimplePatternList gPatterns = {effectPixels};
 //SimplePatternList gPatterns = {binaryCounter};
 //SimplePatternList gPatterns = {lavalamp};
 //SimplePatternList gPatterns = {blocks};
 //SimplePatternList gPatterns = {rainbowSin};
 //SimplePatternList gPatterns = {idleFluorescentTube, idleRotation};
-SimplePatternList gPatterns = {idleFluorescentTube};
+//SimplePatternList gPatterns = {idleFluorescentTube};
+SimplePatternList gPatterns = {effectFire};
 
 //////////
 // loop //
@@ -234,7 +235,7 @@ void frame(){
   //ptrEffect->runPattern();
   //pixels2();
 
-  if(vuSignal){
+  if(vuSignal && 1==2){
     vumeter2();
   }else if(impulseCount <= 4){
      gPatterns[gCurrentPatternNumber](); 
