@@ -99,7 +99,7 @@ void effectFire(){
       Pixels[unused].used = true;
       Pixels[unused].ledPos = 71;
       Pixels[unused].gravity = random(1600, 1800) / 1000.0;
-      Pixels[unused].velocity = beatsin16(8, 20, 40) - 60;
+      Pixels[unused].velocity = beatsin16(8, 10, 20) - 20;
       Pixels[unused].startTime = millis();
       Pixels[unused].pixelData = CHSV(gHue + random(8, 32), 255, 255);
     }
@@ -119,5 +119,5 @@ void effectFire(){
   fadeToBlackBy(bufferBig, 72, 128);
   buffer2leds(0, true);
   memmove8(&secondary[0]                     , &leds[0]           , (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
-  memmove8(&secondary[0], &leds[NUM_LEDS / 2], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB)); // test
+  memmove8(&secondary[0], &leds[NUM_LEDS / 2], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB)); // leds upper -> secondary lower!!!
 }

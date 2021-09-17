@@ -8,11 +8,17 @@ void idleFluorescentTube() {
   fadeToBlackBy(     leds,           NUM_LEDS,  4);
   fadeToBlackBy(secondary, NUM_LEDS_SECONDARY, 24);
   
-  if(random(0,  beatsin8(16, 24, 256)) == 1){
+  if(random(0,  beatsin8(16, 16, 256)) == 1){
     FastLED.setBrightness(random(MAX_BRIGHTNESS * 0.75, MAX_BRIGHTNESS));
     //fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random(  56, 72), 176, 255));
     //fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( 200, 220), 176, 255));
-    fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( gHue, gHue + 32), 255, 255));
+    
+    if(random(0,2) == 0){
+      fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( gHue, gHue + 32), 255, 255));
+    }else{
+      fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( gHue, gHue + 32 + 128), 255, 255));
+    }
+    
     //if(random(0, 10) == 1){ int rand5 = random(0, NUM_LEDS); leds[rand5] = CHSV( random(  56,  72), 176, 255); }
     //if(random(0, 10) == 1){ int rand5 = random(0, NUM_LEDS); leds[rand5] = CHSV( random(  200,  220), 176, 255); }
     

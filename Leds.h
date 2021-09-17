@@ -1,12 +1,13 @@
 #pragma once
 #include <Arduino.h>
 #define NUM_LEDS             144
-#define NUM_LEDS_SECONDARY     6
+//#define NUM_LEDS_SECONDARY     6
+#define NUM_LEDS_SECONDARY    14
 
 #define BRIGHTNESS            40
-#define MAX_BRIGHTNESS       240 // absolute PWM
+#define MAX_BRIGHTNESS       248 // absolute PWM
 
-#define MAX_POWER_MILLIAMPS  660
+#define MAX_POWER_MILLIAMPS  750
 #define MAX_POWER_VOLTS        5
 //#define FRAMES_PER_SECOND 20
 
@@ -31,10 +32,12 @@ FASTLED_USING_NAMESPACE
 // idle
 void idleRotation();
 void idleFluorescentTube();
+void idlePulsating();
 
 // effects
 void effectFire();
 void effectPixels();
+void effectLava();
 
 // rotation
 

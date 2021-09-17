@@ -111,10 +111,10 @@ void setup() {
   if(useSerial && !Serial){ delay(1000); if(!Serial){useSerial = false; }; }
   if(useSerial){ Serial.println("Starting up ..."); };
   // DATA_RATE_MHZ(24)++
-  FastLED.addLeds<SK9822,       11, 13, BGR>(leds,        0, 72).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
-  FastLED.addLeds<SK9822,       26, 27, BGR>(leds,       72, 72).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
-  FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,   0,  3).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
-  FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary,   3,  3).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
+  FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
+  FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
+  FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
+  FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
   FastLED.setBrightness(MAX_BRIGHTNESS); // PWM duty cycles
   FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
   FastLED.setMaxRefreshRate(0);
@@ -165,7 +165,10 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {rainbowSin};
 //SimplePatternList gPatterns = {idleFluorescentTube, idleRotation};
 //SimplePatternList gPatterns = {idleFluorescentTube};
-SimplePatternList gPatterns = {effectFire};
+//SimplePatternList gPatterns = {effectFire};
+//SimplePatternList gPatterns = {effectLava};
+//SimplePatternList gPatterns = {idleRotation};
+SimplePatternList gPatterns = {idlePulsating};
 
 //////////
 // loop //
@@ -235,10 +238,10 @@ void frame(){
   //ptrEffect->runPattern();
   //pixels2();
 
-  if(vuSignal && 1==2){
+  if(vuSignal){
     vumeter2();
   }else if(impulseCount <= 4){
-     gPatterns[gCurrentPatternNumber](); 
+    gPatterns[gCurrentPatternNumber](); 
   }else{
     binaryCounter();
   }
