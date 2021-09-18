@@ -14,8 +14,6 @@
 //#define FASTLED_ALLOW_INTERRUPTS 0
 #define FASTLED_INTERNAL
 
-#include <WS2812Serial.h>
-#define USE_WS2812SERIAL
 // Usable pins:
 //   Teensy LC:   1, 4, 5, 24
 //   Teensy 3.2:  1, 5, 8, 10, 31   (overclock to 120 MHz for pin 8)
@@ -23,9 +21,6 @@
 //   Teensy 3.6:  1, 5, 8, 10, 26, 32, 33
 //   Teensy 4.0:  1, 8, 14, 17, 20, 24, 29, 39
 //   Teensy 4.1:  1, 8, 14, 17, 20, 24, 29, 35, 47, 53
-
-#include <FastLED.h>
-FASTLED_USING_NAMESPACE
 
 // effects
 

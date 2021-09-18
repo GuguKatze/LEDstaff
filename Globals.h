@@ -1,9 +1,16 @@
 #pragma once
 #include <Arduino.h>
+
+// https://forum.pjrc.com/threads/64645-Teensy-4-1-WS2812B-LED-Problem
+// https://github.com/PaulStoffregen/WS2812Serial
+// git clone git@github.com:PaulStoffregen/WS2812Serial.git
+#include <WS2812Serial.h>
+#define USE_WS2812SERIAL
+
+// FASTLED_USING_NAMESPACE
+#define FASTLED_INTERNAL // Pragma messages should not be getting marked as warnings or errors - that's a bug you should file with the IDE. In the meantime, you can disable them by including #define FASTLED_INTERNAL before #include <FastLED.h>.
+#include <FastLED.h>
 #include "Leds.h"
-//#include <Wire.h>
-//#define SCL A3
-//#define SDA A2
 
 extern CRGB leds[NUM_LEDS];
 extern CRGB ledsTmp[NUM_LEDS];

@@ -8,33 +8,33 @@
 //void operator delete(void* ptr) { free(ptr); } 
 
 // https://github.com/Richard-Gemmell/teensy4_i2c
+// git clone git@github.com:Richard-Gemmell/teensy4_i2c.git
 // | Port | Pins               | imx_rt1060_i2c_driver.h | i2c_driver_wire.h |
 // | ---- |--------------------| ------------------|-------|
 // | 0    | SCL0(19), SDA0(18) | Master or Slave   | Wire  |
 // | 1    | SCL1(16), SDA1(17) | Master1 or Slave1 | Wire1 |
 // | 2    | SCL2(24), SDA2(25) | Master2 or Slave2 | Wire2 |
-#include <i2c_driver.h>
-#include <i2c_driver_wire.h>
+// The I2C protocol uses open drain pins to pull signal voltages low and pull up resistors to pull voltages back up again.
+// This library enables the Teensy's 22 kΩ internal pull up resistor by default.
+// Many sensors that support I2C often have internal pullups as well. These may provide enough resistance for your application.
+// If you don't have any internal pullups or the internal resistors aren't big enough for your application then you'll need to use external pullups.
+// I recommend 2.2 kΩ or 1 kΩ.
+#include <i2c_driver.h>       // SCL 19 YELLOW
+#include <i2c_driver_wire.h>  // SDA 18 GREEN
 
 Effect* ptrEffect = NULL;
 
 void receiveEvent(int howMany);
 
-//#define FASTLED_INTERNAL
-#include <WS2812Serial.h>
-#define USE_WS2812SERIAL
-#include <FastLED.h>
-//FASTLED_USING_NAMESPACE
-
 //#include <SD.h>
 //#include <SPI.h>
 //int chipSelect = BUILTIN_SDCARD;
 
-CRGB    leds[NUM_LEDS];
-CRGB ledsTmp[NUM_LEDS];
-CRGB ledsTmpLow[NUM_LEDS/2];
-CRGB ledsTmpHigh[NUM_LEDS/2];
-CRGB bufferBig[NUM_LEDS * 3];
+CRGB        leds[NUM_LEDS];
+CRGB     ledsTmp[NUM_LEDS];
+CRGB  ledsTmpLow[NUM_LEDS / 2];
+CRGB ledsTmpHigh[NUM_LEDS / 2];
+CRGB   bufferBig[NUM_LEDS * 3];
 
 CRGB secondary[NUM_LEDS_SECONDARY];
 
@@ -111,10 +111,18 @@ void setup() {
   if(useSerial && !Serial){ delay(1000); if(!Serial){useSerial = false; }; }
   if(useSerial){ Serial.println("Starting up ..."); };
   // DATA_RATE_MHZ(24)++
+  
+  //FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
+  //FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
+  //FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
+  //FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
+
   FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
   FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
-  FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
+  FastLED.addLeds<WS2812SERIAL, 29,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
   FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
+  
+  
   FastLED.setBrightness(MAX_BRIGHTNESS); // PWM duty cycles
   FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
   FastLED.setMaxRefreshRate(0);
