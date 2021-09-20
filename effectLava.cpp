@@ -42,6 +42,6 @@ void effectLava(){
     //leds[i] = CHSV(0, 255, brightness);
   }
   buffer2leds(0, true);
-  memmove8(&secondary[0]                     , &leds[0]           , (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
-  memmove8(&secondary[NUM_LEDS_SECONDARY / 2], &leds[NUM_LEDS / 2], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
+  memmove8(&secondary[0]                     , &leds[0]           , NUM_LEDS_SECONDARY / 2 * sizeof(CRGB));
+  memmove8(&secondary[NUM_LEDS_SECONDARY / 2], &leds[NUM_LEDS / 2], NUM_LEDS_SECONDARY / 2 * sizeof(CRGB));
 }

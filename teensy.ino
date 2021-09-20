@@ -22,6 +22,9 @@
 #include <i2c_driver.h>       // SCL 19 YELLOW
 #include <i2c_driver_wire.h>  // SDA 18 GREEN
 
+#include <SPI.h>
+
+
 Effect* ptrEffect = NULL;
 
 void receiveEvent(int howMany);
@@ -113,13 +116,15 @@ void setup() {
   // DATA_RATE_MHZ(24)++
   
   //FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
-  //FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
   //FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
+ 
+  //FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
   //FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
 
   FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
+  FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
+  
   FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
-  FastLED.addLeds<WS2812SERIAL, 29,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
   FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
   
   
@@ -129,6 +134,12 @@ void setup() {
   FastLED.clear();
   FastLED.show();
 
+  // SPI
+  //pinMode (slaveSelectPin, OUTPUT);
+  // initialize SPI:
+  SPI.begin(); 
+
+  // I2C
   Wire.begin(); 
   Wire.setClock(1000000);
  
@@ -167,7 +178,7 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
 
 //SimplePatternList gPatterns = {effectPixels};
-//SimplePatternList gPatterns = {binaryCounter};
+SimplePatternList gPatterns = {effectBinaryCounter};
 //SimplePatternList gPatterns = {lavalamp};
 //SimplePatternList gPatterns = {blocks};
 //SimplePatternList gPatterns = {rainbowSin};
@@ -176,7 +187,7 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {effectFire};
 //SimplePatternList gPatterns = {effectLava};
 //SimplePatternList gPatterns = {idleRotation};
-SimplePatternList gPatterns = {idlePulsating};
+//SimplePatternList gPatterns = {idlePulsating};
 
 //////////
 // loop //
@@ -251,7 +262,7 @@ void frame(){
   }else if(impulseCount <= 4){
     gPatterns[gCurrentPatternNumber](); 
   }else{
-    binaryCounter();
+    effectBinaryCounter();
   }
  
   firstFrame = false; 
@@ -273,6 +284,6 @@ void frame(){
   //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
   //if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
   //if(vuSignal){ leds[20] = CRGB::Green; } else { leds[20] = CRGB::Red; }
-  //leds[71]  = CHSV( 64, 255, 64);
+  leds[71]  = CHSV( 64, 255, 64);
   FastLED.show();
 }
