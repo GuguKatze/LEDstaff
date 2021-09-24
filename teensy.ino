@@ -178,7 +178,7 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
 
 //SimplePatternList gPatterns = {effectPixels};
-SimplePatternList gPatterns = {effectBinaryCounter};
+//SimplePatternList gPatterns = {effectBinaryCounter};
 //SimplePatternList gPatterns = {lavalamp};
 //SimplePatternList gPatterns = {blocks};
 //SimplePatternList gPatterns = {rainbowSin};
@@ -186,8 +186,9 @@ SimplePatternList gPatterns = {effectBinaryCounter};
 //SimplePatternList gPatterns = {idleFluorescentTube};
 //SimplePatternList gPatterns = {effectFire};
 //SimplePatternList gPatterns = {effectLava};
-//SimplePatternList gPatterns = {idleRotation};
+SimplePatternList gPatterns = {idleRotation};
 //SimplePatternList gPatterns = {idlePulsating};
+//SimplePatternList gPatterns = {effectPalette};
 
 //////////
 // loop //
@@ -284,6 +285,6 @@ void frame(){
   //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
   //if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
   //if(vuSignal){ leds[20] = CRGB::Green; } else { leds[20] = CRGB::Red; }
-  leds[71]  = CHSV( 64, 255, 64);
+  //leds[71]  = CHSV( 64, 255, 64); // bottom indicator
   FastLED.show();
 }

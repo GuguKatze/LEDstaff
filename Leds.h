@@ -34,6 +34,7 @@ void effectFire();
 void effectPixels();
 void effectLava();
 void effectBinaryCounter();
+void effectPalette();
 
 // rotation
 
@@ -64,7 +65,7 @@ void vumeter2();
 void fire();
 void waterdrops();
 void level();
-void palette();
+
 
 void glow();
 //void pixels();
