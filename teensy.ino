@@ -34,16 +34,12 @@ void receiveEvent(int howMany);
 //int chipSelect = BUILTIN_SDCARD;
 
 CRGB        leds[NUM_LEDS];
+CRGB   secondary[NUM_LEDS_SECONDARY];
+
 CRGB     ledsTmp[NUM_LEDS];
 CRGB  ledsTmpLow[NUM_LEDS / 2];
 CRGB ledsTmpHigh[NUM_LEDS / 2];
 CRGB   bufferBig[NUM_LEDS * 3];
-
-CRGB secondary[NUM_LEDS_SECONDARY];
-
-
-//CRGB bufferLow[NUM_LEDS * 3];
-//CRGB bufferHigh[NUM_LEDS * 3];
 
 Pixel Pixels[NUM_PIXELS];
 bool blockingLookup[NUM_LEDS];
@@ -55,10 +51,6 @@ bool useSerial = true;
 bool ledsEnabled = true; // true;
 
 uint8_t gHue = 0;
-//unsigned long lastHue   =   0;
-//uint8_t hueIncrement = 1;
-//uint8_t msPerHue = 10;
-
 unsigned int msPerFrame =  10;
 unsigned long lastFrame =   0;
 unsigned long fCount = 0;
@@ -82,23 +74,14 @@ void s3Impulse(){ Serial.println("s3"); lastImpulse = millis(); if(impulseCount 
 void s4Impulse(){ Serial.println("s4"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 4; };
 void vuImpulse(){ vuSignal = !digitalRead(5); vuChange = true; };
 
-bool boolClear = false;
-//unsigned long frameCount = 0;
+
 unsigned long wireDuration = 0;
-
-
-
-//void frame();
 
 // vu data
 float  filteredLeftFast[7];
 float filteredRightFast[7];
 float  filteredLeftSlow[7];
 float filteredRightSlow[7];
-
-//Obj effect;
-
-
 
 void receiveEvent(int howMany)
 {
@@ -114,13 +97,6 @@ void setup() {
   if(useSerial && !Serial){ delay(1000); if(!Serial){useSerial = false; }; }
   if(useSerial){ Serial.println("Starting up ..."); };
   // DATA_RATE_MHZ(24)++
-  
-  //FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
-  //FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
- 
-  //FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
-  //FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
-
   FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
   FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
   
@@ -137,7 +113,7 @@ void setup() {
   // SPI
   //pinMode (slaveSelectPin, OUTPUT);
   // initialize SPI:
-  SPI.begin(); 
+  //SPI.begin(); 
 
   // I2C
   Wire.begin(); 
@@ -175,19 +151,28 @@ uint8_t gCurrentPatternNumber = 0;
 typedef void (*SimplePatternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
+
+//SimplePatternList gPatterns = {effectBinaryCounter};
+//SimplePatternList gPatterns = {effectFire};
+//SimplePatternList gPatterns = {effectIce};
+SimplePatternList gPatterns = {effectPixels};
+//SimplePatternList gPatterns = {effectLevel};
+
+//SimplePatternList gPatterns = {idleFluorescentTube};
+//SimplePatternList gPatterns = {idleRotation};
+//SimplePatternList gPatterns = {idlePulsating};
+
+
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
 
-//SimplePatternList gPatterns = {effectPixels};
-//SimplePatternList gPatterns = {effectBinaryCounter};
 //SimplePatternList gPatterns = {lavalamp};
 //SimplePatternList gPatterns = {blocks};
 //SimplePatternList gPatterns = {rainbowSin};
 //SimplePatternList gPatterns = {idleFluorescentTube, idleRotation};
-//SimplePatternList gPatterns = {idleFluorescentTube};
-//SimplePatternList gPatterns = {effectFire};
-//SimplePatternList gPatterns = {effectLava};
-SimplePatternList gPatterns = {idleRotation};
-//SimplePatternList gPatterns = {idlePulsating};
+
+
+
+
 //SimplePatternList gPatterns = {effectPalette};
 
 //////////
@@ -197,8 +182,8 @@ void loop() {
   //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
   if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 60 * 0.5)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
     Serial.println("Changing effect ...");    
-    ptrEffect = new Effect();
-    ptrEffect->init();
+    //ptrEffect = new Effect();
+    //ptrEffect->init();
 
     lastEffectChange = millis();
     firstFrame = true;
@@ -226,22 +211,54 @@ void loop() {
     lastWireTime = millis();
     unsigned long wireStartTime = millis();
     //Wire.requestFrom(0x40, sizeof(vu.bytes));
-    Wire.requestFrom(0x40, sizeof(I2Cdata.bytes));
     //    Serial.print((char)Wire.peek());
-    Serial.print("?");
-    //leds[19] = CRGB::Orange;
+
+    uint8_t packetType = 0;
+    Wire.requestFrom(0x40, 1);
+    while(Wire.available()){
+      packetType = Wire.read();    // receive a byte as character
+    }
+    switch (packetType) {
+      case 0:
+        break;
+      case 1:
+        Serial.println("[packet] effect");
+        Wire.requestFrom(0x40, 1);
+        while(Wire.available()){
+          Wire.read();
+        }
+      case 3:
+        Serial.println("[packet] pitch");
+        Wire.requestFrom(0x40, 1);
+        while(Wire.available()){
+          Wire.read();
+        }
+        break;
+      default:
+        Serial.println("[packet] ???"); 
+        break;
+    }
+/*
+    uint8_t packetType = (uint8_t)Wire.peek();
+    if(packetType == 3){
+      Serial.println("[packet] pitch");  
+    }else{
+      Serial.println("[packet] " + String(packetType));  
+    }
+*/
+    /*
+    Wire.requestFrom(0x40, sizeof(I2Cdata.bytes));
     if (Wire.available()) {
       int i = 0; while(Wire.available()) { I2Cdata.bytes[i] = Wire.read(); i++; }
-      //Serial.println("<");
     }
     memcpy8(&vu.bytes[0], &I2Cdata.bytes[0], sizeof vu.bytes); // copy vu data from the I2C union over to the vu union
     vuFilter();
+    */
+
+    
     wireDuration = millis() - wireStartTime;
   }
-  //if(lastHue + msPerHue < millis()){
-  //  lastHue = millis();
-  //  gHue += hueIncrement;
-  //}
+  
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
     frame();

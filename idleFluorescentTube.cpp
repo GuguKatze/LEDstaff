@@ -13,11 +13,11 @@ void idleFluorescentTube() {
     //fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random(  56, 72), 176, 255));
     //fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( 200, 220), 176, 255));
     
-    if(random(0,2) == 0){
+    //if(random(0,2) == 0){
       fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( gHue, gHue + 32), 255, 255));
-    }else{
-      fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( gHue, gHue + 32 + 128), 255, 255));
-    }
+    //}else{
+    //  fill_solid(&secondary[0], NUM_LEDS_SECONDARY, CHSV( random( gHue, gHue + 32 + 128), 255, 255));
+    //}
     
     //if(random(0, 10) == 1){ int rand5 = random(0, NUM_LEDS); leds[rand5] = CHSV( random(  56,  72), 176, 255); }
     //if(random(0, 10) == 1){ int rand5 = random(0, NUM_LEDS); leds[rand5] = CHSV( random(  200,  220), 176, 255); }

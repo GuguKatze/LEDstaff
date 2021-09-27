@@ -7,7 +7,7 @@
 #define BRIGHTNESS            40
 #define MAX_BRIGHTNESS       248 // absolute PWM
 
-#define MAX_POWER_MILLIAMPS  500
+#define MAX_POWER_MILLIAMPS  750
 #define MAX_POWER_VOLTS        5
 //#define FRAMES_PER_SECOND 20
 
@@ -32,9 +32,10 @@ void idlePulsating();
 // effects
 void effectFire();
 void effectPixels();
-void effectLava();
+void effectIce();
 void effectBinaryCounter();
 void effectPalette();
+void effectLevel();
 
 // rotation
 
@@ -64,7 +65,7 @@ void vumeter();
 void vumeter2();
 void fire();
 void waterdrops();
-void level();
+
 
 
 void glow();

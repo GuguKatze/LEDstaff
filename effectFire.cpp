@@ -39,7 +39,7 @@ CRGBPalette16 gPal = fire_gp;
 
 void effectFire(){
   if(firstFrame){
-    FastLED.setBrightness(MAX_BRIGHTNESS);
+    FastLED.setBrightness(BRIGHTNESS);
     msPerFrame = 20;
     fill_solid (&leds[0], NUM_LEDS, CRGB::Black);
 
@@ -53,7 +53,7 @@ void effectFire(){
       Pixels[i].pixelData = CRGB::Black;
     }
   }
-  FastLED.setBrightness(random(MAX_BRIGHTNESS * .5, MAX_BRIGHTNESS));
+  FastLED.setBrightness(random(MAX_BRIGHTNESS * .5, MAX_BRIGHTNESS * .75));
   random16_add_entropy( random());
 
   //CRGB darkcolor  = CHSV(gHue,255,192); // pure hue, three-quarters brightness
@@ -118,6 +118,6 @@ void effectFire(){
   /////
   fadeToBlackBy(bufferBig, 72, 128);
   buffer2leds(0, true);
-  memmove8(&secondary[0]                     , &leds[0]           , (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
-  memmove8(&secondary[0], &leds[NUM_LEDS / 2], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB)); // leds upper -> secondary lower!!!
+  memmove8(&secondary[NUM_LEDS_SECONDARY/2], &leds[NUM_LEDS / 2], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB));
+  memmove8(&secondary[0]                   , &leds[NUM_LEDS / 2], (NUM_LEDS_SECONDARY/2) * sizeof(CRGB)); // leds upper -> secondary lower!!!
 }

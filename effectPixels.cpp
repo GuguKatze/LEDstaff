@@ -5,6 +5,8 @@ void effectPixels() {
     FastLED.setBrightness(MAX_BRIGHTNESS);
     msPerFrame = 10;
     fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
+
+    readFromNano = true; // <------------------------------------------------------------ REMOVE
     
     // initialize Pixels
     for(int i = 0; i < NUM_PIXELS; i++){
@@ -17,14 +19,13 @@ void effectPixels() {
     }
   }
   //FastLED.setBrightness(beatsin16(20, 32, 64));
-  EVERY_N_MILLISECONDS(120){ gHue++; }
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue, 255, 255));
 
   //fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
   fadeToBlackBy(bufferBig, NUM_LEDS * 3, 80);
   
-  if(random(0, beatsin16(12, 24, 256)) == 0){
+  if(random(0, beatsin16(12, 24, 256)) == 0){ // chance to launch
     int unused = findUnused();
     if(unused != -1){
       //Serial.println("Using unused index: " + String(unused));
@@ -32,7 +33,7 @@ void effectPixels() {
       Pixels[unused].ledPos = 72;
       Pixels[unused].gravity = random(800, 900) / 1000.0;
       //Pixels[unused].velocity = random(40, 120);
-      Pixels[unused].velocity = beatsin16(8, 50, 110) + random(0, 11) - 5;
+      Pixels[unused].velocity = beatsin16(8, 50, 110) + random(0, 11) - 5; // speed
       Pixels[unused].startTime = millis();
       Pixels[unused].pixelData = CHSV(gHue + random(0, 41) - 20, 255, 255);
     }
@@ -60,4 +61,7 @@ void effectPixels() {
   //for (uint8_t i=0; i<NUM_LEDS/2; i++){
   //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));
   //}
+  if(fCount % 60 == 0){
+    gHue++;
+  }
 }
