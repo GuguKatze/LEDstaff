@@ -44,8 +44,9 @@ CRGB   bufferBig[NUM_LEDS * 3];
 Pixel Pixels[NUM_PIXELS];
 bool blockingLookup[NUM_LEDS];
 
+int8_t pitch;
 union vu_ vu;
-union I2Cdata_ I2Cdata;
+//union I2Cdata_ I2Cdata;
 
 bool useSerial = true;
 bool ledsEnabled = true; // true;
@@ -85,11 +86,26 @@ float filteredRightSlow[7];
 
 void receiveEvent(int howMany)
 {
-  while(Wire.available() > 0) {
-  char c = Wire.read();
-    Serial.print(c);
+  uint8_t packetType = Wire.read();
+  if(packetType == 1 && howMany == 2){
+     uint8_t effect = Wire.read();
+     Serial.println("[PACKET] effect: " + String(effect)); 
+  }else if(packetType == 2 && howMany == 2){
+     pitch = Wire.read();
+     Serial.println("[PACKET] pitch: " + String(pitch)); 
+  }else if(packetType == 3 && howMany == 1 + sizeof(vu.bytes)){
+    int i = 0;
+    while(Wire.available()) {
+      vu.bytes[i] = Wire.read();
+      i++;
+    }
+    vuFilter();
+    Serial.println("[PACKET] vu"); 
   }
-  Serial.println();
+  // empty the buffer just to be safe?
+  while(Wire.available() > 0) {
+    Wire.read();
+  }
 }
 
 void setup() {
@@ -116,8 +132,14 @@ void setup() {
   //SPI.begin(); 
 
   // I2C
+  /*
   Wire.begin(); 
   Wire.setClock(1000000);
+  */
+  Wire.begin(0x40);                // join i2c bus with address #4
+  Wire.setClock(1000000);
+  Wire.onReceive(receiveEvent); // register event
+  //Wire.onRequest(requestEvent);
  
   //if(!SD.begin()){
   //  if(useSerial){ Serial.println("SD failed ..."); };
@@ -192,13 +214,7 @@ void loop() {
 
     FastLED.setBrightness(MAX_BRIGHTNESS);
     FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
-   
-    //frameCount = 0;
-    if(vuChange && vuSignal){
-      readFromNano = true;
-    }else{
-      readFromNano = false;
-    }
+
     gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
   }
   if(millis() - lastImpulseDecrease > 1000){
@@ -207,6 +223,7 @@ void loop() {
       impulseCount--;
     }
   }
+  /*
   if(readFromNano && millis() - lastWireTime > 50){
     lastWireTime = millis();
     unsigned long wireStartTime = millis();
@@ -238,6 +255,7 @@ void loop() {
         Serial.println("[packet] ???"); 
         break;
     }
+*/
 /*
     uint8_t packetType = (uint8_t)Wire.peek();
     if(packetType == 3){
@@ -256,8 +274,8 @@ void loop() {
     */
 
     
-    wireDuration = millis() - wireStartTime;
-  }
+    //wireDuration = millis() - wireStartTime;
+  //}
   
   if(lastFrame + msPerFrame < millis()){
     lastFrame = millis();  
@@ -276,7 +294,7 @@ void frame(){
   //pixels2();
 
   if(vuSignal){
-    vumeter2();
+    effectVumeter();
   }else if(impulseCount <= 4){
     gPatterns[gCurrentPatternNumber](); 
   }else{
@@ -300,8 +318,8 @@ void frame(){
   if(frameDuration > 2) { if(frameDuration > 60){ frameDuration = 60; }; leds[frameDuration] = CRGB::Green;  }
   if(wireDuration  > 16){ if(wireDuration  > 60){ wireDuration  = 60; };  leds[wireDuration] = CRGB::Yellow; }
   //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
-  //if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
-  //if(vuSignal){ leds[20] = CRGB::Green; } else { leds[20] = CRGB::Red; }
+  /////////////////////if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
+  //if(vuSignal){ leds[20] = CRGB::Blue; } else { leds[20] = CRGB::Red; }
   //leds[71]  = CHSV( 64, 255, 64); // bottom indicator
   FastLED.show();
 }

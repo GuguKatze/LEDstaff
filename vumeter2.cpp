@@ -11,7 +11,7 @@ unsigned long maxReductionTime = 0;
 bool extending = false;
 uint8_t hiddenAmount = NUM_LEDS / 2;
 
-void vumeter2 () {
+void effectVumeter () {
   if(firstFrame){
     readFromNano = true;
     extending = true;

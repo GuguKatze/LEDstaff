@@ -12,11 +12,11 @@ void effectLevel () {
   FastLED.clear();
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( gHue,       255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( gHue + 128, 255, 255));
-  if(I2Cdata.pitch < -5 && ballVelocity > -10 && ball > 1){
+  if(pitch < -5 && ballVelocity > -10 && ball > 1){
     ballVelocity--;
-  }else if(I2Cdata.pitch > 5 && ballVelocity < 10 && ball  < 142){
+  }else if(pitch > 5 && ballVelocity < 10 && ball  < 142){
     ballVelocity++;
-  }else if(I2Cdata.pitch <= 5 && I2Cdata.pitch >= -5){ // bring ball to standstill if vu.pitch is low
+  }else if(pitch <= 5 && pitch >= -5){ // bring ball to standstill if vu.pitch is low
     if(ballVelocity < -1){
       ballVelocity++;
     }else if(ballVelocity > 1){

@@ -36,6 +36,8 @@ void effectIce();
 void effectBinaryCounter();
 void effectPalette();
 void effectLevel();
+void effectVumeter();
+
 
 // rotation
 
@@ -61,8 +63,8 @@ void strobo();
 void hearts();
 void blocks();
 void police();
-void vumeter();
-void vumeter2();
+
+
 void fire();
 void waterdrops();
 

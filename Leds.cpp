@@ -22,13 +22,6 @@ void flip() {
   }
 }
 
-uint8_t iH(uint8_t index){ // indexHelper
- if(index <= 71){
-   return 71 - index;
- }
- return index;
-}
-
 int findUnused() {
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
     if (Pixels[i].used){ continue; }

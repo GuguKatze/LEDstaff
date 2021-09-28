@@ -22,6 +22,8 @@ extern CRGB secondary[NUM_LEDS_SECONDARY];
 
 extern bool blockingLookup[NUM_LEDS];
 
+extern int8_t pitch;
+
 extern bool useSerial;
 extern bool ledsEnabled;
 extern bool firstFrame;
@@ -51,8 +53,7 @@ void b2l(unsigned int bufferIndex, unsigned int ledsIndex, unsigned int numberOf
 void bar2handle();
 void ledsTmp2leds();
 
-uint8_t iH(uint8_t);
-
+/*
 union I2Cdata_ {
   struct __attribute__((packed)){
     uint8_t left[7];
@@ -62,6 +63,7 @@ union I2Cdata_ {
   uint8_t bytes[15];
 };
 extern union I2Cdata_ I2Cdata;
+*/
 
 union vu_ {
   struct __attribute__((packed)){
