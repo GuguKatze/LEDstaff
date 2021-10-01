@@ -121,7 +121,10 @@ void setup() {
   
   
   FastLED.setBrightness(MAX_BRIGHTNESS); // PWM duty cycles
-  FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
+  //FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
+  FastLED.setMaxPowerInMilliWatts(MAX_POWER_MILLIWATTS);
+  //set_max_power_indicator_LED(LED_BUILTIN);
+  //set_max_power_indicator_LED(13);
   FastLED.setMaxRefreshRate(0);
   FastLED.clear();
   FastLED.show();
@@ -173,12 +176,19 @@ uint8_t gCurrentPatternNumber = 0;
 typedef void (*SimplePatternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
+//SimplePatternList gPatterns = {ledTest};
+//SimplePatternList gPatterns = {effectTest};
 
-//SimplePatternList gPatterns = {effectBinaryCounter};
-//SimplePatternList gPatterns = {effectFire};
-//SimplePatternList gPatterns = {effectIce};
-SimplePatternList gPatterns = {effectPixels};
 //SimplePatternList gPatterns = {effectLevel};
+//SimplePatternList gPatterns = {effectBinaryCounter};
+
+//SimplePatternList gPatterns = {effectFire};
+//SimplePatternList gPatterns = {effectPixels};
+//SimplePatternList gPatterns = {effectIce};
+SimplePatternList gPatterns = {effectMatrix};
+
+//SimplePatternList gPatterns = {effectFire, effectPixels, effectIce, effectMatrix};
+
 
 //SimplePatternList gPatterns = {idleFluorescentTube};
 //SimplePatternList gPatterns = {idleRotation};
@@ -202,7 +212,7 @@ SimplePatternList gPatterns = {effectPixels};
 //////////
 void loop() {
   //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
-  if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 60 * 0.5)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
+  if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 20)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
     Serial.println("Changing effect ...");    
     //ptrEffect = new Effect();
     //ptrEffect->init();

@@ -7,8 +7,9 @@
 #define BRIGHTNESS            40
 #define MAX_BRIGHTNESS       248 // absolute PWM
 
-#define MAX_POWER_MILLIAMPS  750
-#define MAX_POWER_VOLTS        5
+#define MAX_POWER_MILLIAMPS     50
+#define MAX_POWER_VOLTS          5
+#define MAX_POWER_MILLIWATTS   900
 //#define FRAMES_PER_SECOND 20
 
 //#define FASTLED_ALLOW_INTERRUPTS 0
@@ -22,9 +23,10 @@
 //   Teensy 4.0:  1, 8, 14, 17, 20, 24, 29, 39
 //   Teensy 4.1:  1, 8, 14, 17, 20, 24, 29, 35, 47, 53
 
-// effects
+void effectTest();
 
 // idle
+void ledTest();
 void idleRotation();
 void idleFluorescentTube();
 void idlePulsating();
@@ -37,7 +39,7 @@ void effectBinaryCounter();
 void effectPalette();
 void effectLevel();
 void effectVumeter();
-
+void effectMatrix();
 
 // rotation
 

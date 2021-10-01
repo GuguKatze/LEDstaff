@@ -5,7 +5,7 @@ CRGB ballSprite[3];
 
 void effectLevel () {
   if(firstFrame){
-    readFromNano = true;
+    ///////////////////////////////////////////////////////////////readFromNano = true;
     FastLED.setBrightness(BRIGHTNESS);
     msPerFrame = 10;
   }

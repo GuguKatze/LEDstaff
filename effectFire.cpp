@@ -101,7 +101,7 @@ void effectFire(){
       Pixels[unused].gravity = random(1600, 1800) / 1000.0;
       Pixels[unused].velocity = beatsin16(8, 10, 20) - 20;
       Pixels[unused].startTime = millis();
-      Pixels[unused].pixelData = CHSV(gHue + random(8, 32), 255, 255);
+      Pixels[unused].pixelData = CHSV(random(8, 32), 255, 255);
     }
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){

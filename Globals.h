@@ -44,6 +44,7 @@ extern unsigned int state;
 //extern unsigned long frameCount;
 void vuFilter();
 int findUnused();
+void DrawPixels(float fPos, float count, CRGB color);
 void mirror();
 void flip();
 void buffer2leds(unsigned int bufferOffset, bool flip);

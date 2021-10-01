@@ -2,12 +2,10 @@
 
 void effectPixels() {
   if(firstFrame){
-    FastLED.setBrightness(MAX_BRIGHTNESS);
+    FastLED.setBrightness(BRIGHTNESS);
     msPerFrame = 10;
     fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
 
-    readFromNano = true; // <------------------------------------------------------------ REMOVE
-    
     // initialize Pixels
     for(int i = 0; i < NUM_PIXELS; i++){
       Pixels[i].used = false;
@@ -61,7 +59,7 @@ void effectPixels() {
   //for (uint8_t i=0; i<NUM_LEDS/2; i++){
   //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));
   //}
-  if(fCount % 60 == 0){
+  if(fCount % 40 == 0){
     gHue++;
   }
 }
