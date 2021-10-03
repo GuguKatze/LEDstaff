@@ -178,6 +178,9 @@ typedef void (*SimplePatternList[])();
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 //SimplePatternList gPatterns = {ledTest};
 //SimplePatternList gPatterns = {effectTest};
+//SimplePatternList gPatterns = {effectNoise};
+//SimplePatternList gPatterns = {effectMetaballs};
+SimplePatternList gPatterns = {effectHeat};
 
 //SimplePatternList gPatterns = {effectLevel};
 //SimplePatternList gPatterns = {effectBinaryCounter};
@@ -185,7 +188,7 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {effectFire};
 //SimplePatternList gPatterns = {effectPixels};
 //SimplePatternList gPatterns = {effectIce};
-SimplePatternList gPatterns = {effectMatrix};
+//SimplePatternList gPatterns = {effectMatrix};
 
 //SimplePatternList gPatterns = {effectFire, effectPixels, effectIce, effectMatrix};
 

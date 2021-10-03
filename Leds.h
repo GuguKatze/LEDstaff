@@ -24,6 +24,9 @@
 //   Teensy 4.1:  1, 8, 14, 17, 20, 24, 29, 35, 47, 53
 
 void effectTest();
+void effectNoise();
+void effectMetaballs();
+void effectHeat();
 
 // idle
 void ledTest();

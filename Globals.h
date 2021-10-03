@@ -81,13 +81,14 @@ typedef struct Pixel {
   float ledPos;
   float gravity;
   float velocity;
+  float heat;
   unsigned long startTime;
   CRGB pixelData;
   //CHSV pixelData;
   bool blocking;
 } Pixel;
 
-#define NUM_PIXELS 64
+#define NUM_PIXELS 32
 extern Pixel Pixels[NUM_PIXELS];
 
 extern float filteredLeftFast[7];

@@ -90,29 +90,29 @@ void DrawPixels(float fPos, float count, CRGB color)
   // Calculate how much the first pixel will hold
   float availFirstPixel = 1.0f - (fPos - (long)(fPos));
   float amtFirstPixel = min(availFirstPixel, count);
-  float remaining = min(count, NUM_LEDS-fPos);
+  //float remaining = min(count, NUM_LEDS-fPos); // issue with bufferBig
+  float remaining = count;
   int iPos = fPos;
   Serial.println(String(iPos));
+  
   // Blend (add) in the color of the first partial pixel
-
   if (remaining > 0.0f)
   {
-    FastLED.leds()[iPos++] += ColorFraction(color, amtFirstPixel);
+    bufferBig[iPos++] += ColorFraction(color, amtFirstPixel);
     remaining -= amtFirstPixel;
   }
 
   // Now draw any full pixels in the middle
-
   while (remaining > 1.0f)
   {
-    leds[iPos++] += color;
+    bufferBig[iPos++] += color;
     remaining--;
   }
 
   // Draw tail pixel, up to a single full pixel
-
   if (remaining > 0.0f)
   {
-    leds[iPos] += ColorFraction(color, remaining);
+    //leds[iPos] += ColorFraction(color, remaining);
+    bufferBig[iPos] += ColorFraction(color, remaining);
   }
 }

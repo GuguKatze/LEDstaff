@@ -17,9 +17,6 @@ void effectMatrix () {
     FastLED.setBrightness(BRIGHTNESS);
     msPerFrame = 20;
     fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
-
-    fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
-
     // initialize Pixels
     for(int i = 0; i < NUM_PIXELS; i++){
       Pixels[i].used = false;
