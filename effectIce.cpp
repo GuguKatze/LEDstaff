@@ -21,9 +21,20 @@ DEFINE_GRADIENT_PALETTE( Blue_Magenta_Yellow_gp ) {
   191, 255, 55, 45,
   255, 255,255,  0};
 
+DEFINE_GRADIENT_PALETTE( pink_feathers_gp_ ) {
+    0,   0,  0,  0,
+   16,   1,  0,  1,
+   32,   7,  0,  1,
+   51,  20,  0,  3,
+   70,  40,  0,  7,
+   96,  82,  0, 15,
+  122, 142,  0, 25,
+  188, 194, 55,103,
+  255, 255,255,255};
 
 
 CRGBPalette16 lavaPalette = fierce_ice_gp;
+//CRGBPalette16 lavaPalette = pink_feathers_gp_;
 
 uint16_t brightnessScale = 5;
 uint16_t indexScale = 5;

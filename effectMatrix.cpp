@@ -32,21 +32,23 @@ void effectMatrix () {
   ///////////
   fill_solid(&secondary[0],                      NUM_LEDS_SECONDARY / 2, CHSV( 85, 255, 255));
   fill_solid(&secondary[NUM_LEDS_SECONDARY / 2], NUM_LEDS_SECONDARY / 2, CHSV( 85, 255, 255));
+  uint8_t i = random(0, 174);
+  bufferBig[i] = CRGB::Black;
 
   //fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);
   //fadeToBlackBy(bufferBig, NUM_LEDS * 3, 24);
   fadeToBlackBy(bufferBig, NUM_LEDS * 3, beatsin16(12, 8, 24));
   
-  if(random(0, beatsin16(8, 6, 16)) == 0){ // chance to launch
+  if(random(0, beatsin16(8, 16, 24)) == 0){ // chance to launch
     int unused = findUnused();
     if(unused != -1){
       //Serial.println("Using unused index: " + String(unused));
       Pixels[unused].used = true;
       Pixels[unused].ledPos = random(32, NUM_LEDS * 3);
       
-      Pixels[unused].gravity = random(800, 900) / 1000.0;
+      Pixels[unused].gravity = random(700, 1000) / 1000.0;
       //Pixels[unused].velocity = random(40, 120);
-      Pixels[unused].velocity = 0; // speed
+      Pixels[unused].velocity = random(0, 5) - 5; // speed
       Pixels[unused].startTime = millis();
       Pixels[unused].pixelData = CHSV(random(80, 91), 255, 255);
     }

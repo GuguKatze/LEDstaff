@@ -17,7 +17,7 @@ void fillnoise8() {
 void effectTest () {
   if(firstFrame){
     FastLED.setBrightness(MAX_BRIGHTNESS);
-    msPerFrame = 5;
+    msPerFrame = 10;
   }
   ///////////
   // frame //

@@ -4,12 +4,12 @@
 //#define NUM_LEDS_SECONDARY     6
 #define NUM_LEDS_SECONDARY    14
 
-#define BRIGHTNESS            40
-#define MAX_BRIGHTNESS       248 // absolute PWM
+#define BRIGHTNESS            64
+#define MAX_BRIGHTNESS       255 // absolute PWM
 
-#define MAX_POWER_MILLIAMPS     50
+#define MAX_POWER_MILLIAMPS    750
 #define MAX_POWER_VOLTS          5
-#define MAX_POWER_MILLIWATTS   900
+#define MAX_POWER_MILLIWATTS  2000
 //#define FRAMES_PER_SECOND 20
 
 //#define FASTLED_ALLOW_INTERRUPTS 0
@@ -24,6 +24,9 @@
 //   Teensy 4.1:  1, 8, 14, 17, 20, 24, 29, 35, 47, 53
 
 void effectTest();
+void effectTest2();
+void effectTest3();
+void effectTest4();
 void effectNoise();
 void effectMetaballs();
 void effectHeat();
@@ -46,6 +49,7 @@ void effectMatrix();
 
 // rotation
 
+void effectAirplane();
 void blendwave();
 void beatwave();
 void beatwaveSetup();

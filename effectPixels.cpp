@@ -28,7 +28,7 @@ void effectPixels() {
     if(unused != -1){
       //Serial.println("Using unused index: " + String(unused));
       Pixels[unused].used = true;
-      Pixels[unused].ledPos = 72;
+      Pixels[unused].ledPos = NUM_LEDS * 0.75;
       Pixels[unused].gravity = random(800, 900) / 1000.0;
       //Pixels[unused].velocity = random(40, 120);
       Pixels[unused].velocity = beatsin16(8, 50, 110) + random(0, 11) - 5; // speed
@@ -45,7 +45,7 @@ void effectPixels() {
     if(Pixels[i].velocity < -80){
       Pixels[i].pixelData.fadeToBlackBy(4);
     }else if(Pixels[i].velocity < 5){
-      Pixels[i].pixelData.fadeLightBy(4);
+      Pixels[i].pixelData.fadeLightBy(2);
     }
     Pixels[i].ledPos += Pixels[i].velocity / 100;
     Pixels[i].velocity -= Pixels[i].gravity;
@@ -54,7 +54,9 @@ void effectPixels() {
       Pixels[i].used = false;
     }
   }
-  buffer2leds(0, true);
+  //buffer2leds(0, true);
+  buffer2gap(0, NUM_LEDS / 4);
+  
   //memmove8(&leds[NUM_LEDS/2], &bufferBig[NUM_LEDS/2], (NUM_LEDS/2) * sizeof(CRGB));
   //for (uint8_t i=0; i<NUM_LEDS/2; i++){
   //  memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i], sizeof(CRGB));

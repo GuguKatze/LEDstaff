@@ -50,7 +50,7 @@ void effectBinaryCounter() {
   //b2l(index             ,          0, NUM_LEDS/2, true);  //  0 ->  71
   //b2l(index + NUM_LEDS/2, NUM_LEDS/2, NUM_LEDS/2, false); // 72 -> 143
 
-  uint8_t index = beatsin16(15,       NUM_LEDS / 4, NUM_LEDS);
+  uint8_t index = beatsin16(1,       NUM_LEDS / 4, NUM_LEDS);
   b2l(index           ,            0, NUM_LEDS / 2, true);  //  0 ->  71
   b2l(index + NUM_LEDS * 0.75, NUM_LEDS / 2, NUM_LEDS / 2, false); // 72 -> 143
   

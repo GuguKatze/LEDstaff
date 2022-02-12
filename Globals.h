@@ -48,6 +48,7 @@ void DrawPixels(float fPos, float count, CRGB color);
 void mirror();
 void flip();
 void buffer2leds(unsigned int bufferOffset, bool flip);
+void buffer2gap(unsigned int bufferOffset, unsigned int gap);
 
 void b2l(unsigned int bufferIndex, unsigned int ledsIndex, unsigned int numberOfLeds, bool flip);
 

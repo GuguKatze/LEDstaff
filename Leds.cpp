@@ -33,18 +33,11 @@ int findUnused() {
 void buffer2leds(unsigned int bufferOffset, bool flip){
   b2l(bufferOffset               ,            0, NUM_LEDS / 2, flip);
   b2l(bufferOffset + NUM_LEDS / 2, NUM_LEDS / 2, NUM_LEDS / 2, false);
-  /*
-  memmove8(  &leds[NUM_LEDS/2], &bufferBig[(NUM_LEDS/2)+bufferOffset], (NUM_LEDS/2) * sizeof(CRGB));
-  if(flip){
-    for (uint8_t i=0; i<NUM_LEDS/2; i++){
-      memmove8(&leds[(NUM_LEDS/2)-1-i], &bufferBig[i + bufferOffset], sizeof(CRGB));
-    }
-  }else{
-    memmove8(  &leds[0], &bufferBig[bufferOffset], (NUM_LEDS/2) * sizeof(CRGB));
-  }
-  */
 }
-
+void buffer2gap(unsigned int bufferOffset, unsigned int gap){
+  b2l(bufferOffset               ,            0, NUM_LEDS / 2, true);
+  b2l(bufferOffset + NUM_LEDS / 2 + gap, NUM_LEDS / 2, NUM_LEDS / 2, false);
+}
 
 void b2l(unsigned int bufferIndex, unsigned int ledsIndex, unsigned int numberOfLeds, bool flip){
   if(flip){

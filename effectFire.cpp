@@ -36,6 +36,7 @@ DEFINE_GRADIENT_PALETTE( fire_gp ) {
 
 
 CRGBPalette16 gPal = fire_gp;
+//CRGBPalette16 gPal = pink_feathers_gp;
 
 void effectFire(){
   if(firstFrame){
@@ -93,22 +94,23 @@ void effectFire(){
      bufferBig[pixelnumber + 72] = color;
   }
   /////
-  if(random(0, beatsin16(12, 128, 512)) == 0){
+  if(random(0, beatsin16(12, 128, 512)) < 4){
     int unused = findUnused();
     if(unused != -1){
       Pixels[unused].used = true;
       Pixels[unused].ledPos = 71;
-      Pixels[unused].gravity = random(1600, 1800) / 1000.0;
+      Pixels[unused].gravity = random(1200, 1800) / 1000.0;
       Pixels[unused].velocity = beatsin16(8, 10, 20) - 20;
       Pixels[unused].startTime = millis();
-      Pixels[unused].pixelData = CHSV(random(8, 32), 255, 255);
+      //ixels[unused].pixelData = CHSV(random(8, 32), 255, 255);
+      Pixels[unused].pixelData = ColorFromPalette( gPal, random(64, 192));
     }
   }
   for (uint8_t i = 0; i < NUM_PIXELS; i++){
     if (!Pixels[i].used){ continue; }
     int ledPos = (int) Pixels[i].ledPos;
     bufferBig[ledPos] = Pixels[i].pixelData;
-    Pixels[i].pixelData.fadeToBlackBy(10); 
+    Pixels[i].pixelData.fadeToBlackBy(random(2,6)); 
     Pixels[i].ledPos += Pixels[i].velocity / 100;
     Pixels[i].velocity -= Pixels[i].gravity;
     if(ledPos > 215 || ledPos <= 0){
