@@ -197,10 +197,10 @@ typedef void (*SimplePatternList[])();
 //SimplePatternList gPatterns = {effectAirplane};
 
 
-SimplePatternList gPatterns = {idleFluorescentTube, neontube};
+//SimplePatternList gPatterns = {idleFluorescentTube, neontube};
 //SimplePatternList gPatterns = {idleRotation};
 //SimplePatternList gPatterns = {idlePulsating};
-
+SimplePatternList gPatterns = {idleRotation, idlePulsating};
 
 //SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
 
