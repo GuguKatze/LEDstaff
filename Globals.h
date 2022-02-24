@@ -67,16 +67,6 @@ union I2Cdata_ {
 extern union I2Cdata_ I2Cdata;
 */
 
-union vu_ {
-  struct __attribute__((packed)){
-    uint8_t left[7];
-    uint8_t right[7];
-  };
-  uint8_t bytes[14];
-};
-extern union vu_ vu;
-
-
 typedef struct Pixel {
   bool used;
   float ledPos;
@@ -96,3 +86,50 @@ extern float filteredLeftFast[7];
 extern float filteredRightFast[7];
 extern float filteredLeftSlow[7];
 extern float filteredRightSlow[7];
+
+
+/*
+union vu_ {
+  struct __attribute__((packed)){
+    uint8_t left[7];
+    uint8_t right[7];
+  };
+  uint8_t bytes[14];
+};
+extern union vu_ vu;
+*/
+
+////////////
+// effect //
+////////////
+union effectPacket_ {
+  struct __attribute__((packed)){
+    uint8_t packetType = 1;
+    uint8_t effect;
+  };
+  uint8_t bytes[2];
+};
+extern union effectPacket_ effectPacket;
+///////////
+// pitch //
+///////////
+union pitchPacket_ {
+  struct __attribute__((packed)){
+    uint8_t packetType = 2;
+    int8_t pitch;
+  };
+  uint8_t bytes[2];
+};
+extern union pitchPacket_ pitchPacket;
+////////
+// vu //
+////////
+union vuPacket_ {
+  struct __attribute__((packed)){
+    uint8_t packetType = 3;
+    uint8_t left[7];
+    uint8_t right[7];
+  };
+  uint8_t bytes[15];
+};
+extern union vuPacket_ vuPacket;

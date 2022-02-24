@@ -45,7 +45,15 @@ Pixel Pixels[NUM_PIXELS];
 bool blockingLookup[NUM_LEDS];
 
 int8_t pitch;
-union vu_ vu;
+
+/////////////
+// packets //
+/////////////
+union effectPacket_ effectPacket;
+union pitchPacket_  pitchPacket;
+union vuPacket_     vuPacket;
+
+
 //union I2Cdata_ I2Cdata;
 
 bool useSerial = true;
@@ -54,6 +62,7 @@ bool ledsEnabled = true; // true;
 uint8_t gHue = 0;
 unsigned int msPerFrame =  10;
 unsigned long lastFrame =   0;
+bool boolRender = 1;
 unsigned long fCount = 0;
 
 bool firstFrame = true; // set for the first frame of an effect
@@ -93,10 +102,10 @@ void receiveEvent(int howMany)
   }else if(packetType == 2 && howMany == 2){
      pitch = Wire.read();
      Serial.println("[PACKET] pitch: " + String(pitch)); 
-  }else if(packetType == 3 && howMany == 1 + sizeof(vu.bytes)){
+  }else if(packetType == 3 && howMany == 1 + sizeof(vuPacket.bytes)){
     int i = 0;
     while(Wire.available()) {
-      vu.bytes[i] = Wire.read();
+      vuPacket.bytes[i] = Wire.read();
       i++;
     }
     vuFilter();
@@ -293,14 +302,20 @@ void loop() {
     
     //wireDuration = millis() - wireStartTime;
   //}
-  
-  if(lastFrame + msPerFrame < millis()){
-    lastFrame = millis();  
-    frame();
-    fCount++;
+
+  if(boolRender){
+    renderFrame();
+    boolRender = 0;
   }
+  if(lastFrame + msPerFrame < millis()){
+    FastLED.show();
+    lastFrame = millis();  
+    fCount++;
+    boolRender = true;
+  }
+
 }
-void frame(){
+void renderFrame(){
   
   ////////////////////////////////
   // THIS IS JUST THE BEGINNING //
@@ -338,5 +353,5 @@ void frame(){
   /////////////////////if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
   //if(vuSignal){ leds[20] = CRGB::Blue; } else { leds[20] = CRGB::Red; }
   //leds[71]  = CHSV( 64, 255, 64); // bottom indicator
-  FastLED.show();
+ 
 }

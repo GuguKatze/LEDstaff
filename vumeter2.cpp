@@ -22,8 +22,8 @@ void effectVumeter () {
   fadeToBlackBy(bufferBig, NUM_LEDS * 3, 64);
   for(int i=0;i<7;i++){   
     uint8_t  color   = map( i, 0, 6, 224, 0);
-    uint8_t lenLeft  = map(  constrain(  vu.left[i] -  filteredLeftSlow[i] * 0.30, 0, 200), 0, 200, 0, 10);
-    uint8_t lenRight = map(  constrain( vu.right[i] - filteredRightSlow[i] * 0.30, 0, 200), 0, 200, 0, 10); 
+    uint8_t lenLeft  = map(  constrain(  vuPacket.left[i] -  filteredLeftSlow[i] * 0.30, 0, 200), 0, 200, 0, 10);
+    uint8_t lenRight = map(  constrain( vuPacket.right[i] - filteredRightSlow[i] * 0.30, 0, 200), 0, 200, 0, 10); 
     if(lenLeft  >  maxLenLeft[i]){ maxLenLeft[i] =  lenLeft;  maxLenTimeLeft[i] = millis(); };
     if(lenRight > maxLenRight[i]){ maxLenRight[i] = lenRight; maxLenTimeRight[i] = millis(); };
     uint8_t satLeft  = map(  filteredLeftFast[i], 0, 255, 16, 255);
