@@ -29,6 +29,10 @@ extern bool ledsEnabled;
 extern bool firstFrame;
 extern bool readFromNano;
 
+extern bool boolSpinning;
+extern bool boolVertical;
+extern bool boolUp;
+
 //extern bool mirror;
 extern uint8_t gHue;
 extern unsigned int msPerFrame;

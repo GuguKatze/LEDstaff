@@ -44,17 +44,12 @@ CRGB   bufferBig[NUM_LEDS * 3];
 Pixel Pixels[NUM_PIXELS];
 bool blockingLookup[NUM_LEDS];
 
-int8_t pitch;
-
 /////////////
 // packets //
 /////////////
 union effectPacket_ effectPacket;
 union pitchPacket_  pitchPacket;
 union vuPacket_     vuPacket;
-
-
-//union I2Cdata_ I2Cdata;
 
 bool useSerial = true;
 bool ledsEnabled = true; // true;
@@ -76,6 +71,7 @@ unsigned long lastWireTime = 0;
 bool vuChange = false;
 bool vuSignal = false;
 
+/*
 bool boolImpulse = true;
 uint8_t impulseCount = 0;
 void s1Impulse(){ Serial.println("s1"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 1; };
@@ -83,7 +79,20 @@ void s2Impulse(){ Serial.println("s2"); lastImpulse = millis(); if(impulseCount 
 void s3Impulse(){ Serial.println("s3"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 3; };
 void s4Impulse(){ Serial.println("s4"); lastImpulse = millis(); if(impulseCount <= 6){ impulseCount++; }; boolImpulse = true; state = 4; };
 void vuImpulse(){ vuSignal = !digitalRead(5); vuChange = true; };
+*/
 
+bool boolSpinning = false;
+bool boolVertical = false;
+bool boolUp       = false;
+
+void pinN3_T9(){                                Serial.println("pinN3_T9"); };
+void pinN4_T8(){                                Serial.println("pinN4_T8"); };
+void pinN5_T7(){                                Serial.println("pinN5_T7"); };
+void pinN6_T6(){                                Serial.println("pinN6_T6"); };
+void pinN7_T5(){                                Serial.println("pinN7_T5"); };
+void pinN8_T4(){ boolUp       = digitalRead(4); Serial.println("pinN8_T4"); };
+void pinN9_T3(){ boolVertical = digitalRead(3); Serial.println("pinN9_T3"); };
+void pinN10_T2(){boolSpinning = digitalRead(2); Serial.println("pinN10_T2"); };
 
 unsigned long wireDuration = 0;
 
@@ -98,10 +107,10 @@ void receiveEvent(int howMany)
   uint8_t packetType = Wire.read();
   if(packetType == 1 && howMany == 2){
      uint8_t effect = Wire.read();
-     Serial.println("[PACKET] effect: " + String(effect)); 
+     //////////////////////////////Serial.println("[PACKET] effect: " + String(effect)); 
   }else if(packetType == 2 && howMany == 2){
-     pitch = Wire.read();
-     Serial.println("[PACKET] pitch: " + String(pitch)); 
+     //pitch = Wire.read();
+     ////////////////////////Serial.println("[PACKET] pitch: " + String(pitch)); 
   }else if(packetType == 3 && howMany == 1 + sizeof(vuPacket.bytes)){
     int i = 0;
     while(Wire.available()) {
@@ -109,7 +118,7 @@ void receiveEvent(int howMany)
       i++;
     }
     vuFilter();
-    Serial.println("[PACKET] vu"); 
+    ///////////////////////////////////////////////////Serial.println("[PACKET] vu"); 
   }
   // empty the buffer just to be safe?
   while(Wire.available() > 0) {
@@ -169,66 +178,36 @@ void setup() {
   // Teensy4.1  8 ->  4
   // Teensy4.1  9 ->  3
   //Wire.onReceive(receiveEvent);
-  pinMode(2, INPUT_PULLUP); // reserved
-  pinMode(3, INPUT_PULLUP); // reserved
-  pinMode(4, INPUT_PULLUP); // reserved
+ 
+  /*
   pinMode(5, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(5), vuImpulse, CHANGE);
   pinMode(6, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(6), s4Impulse, FALLING);
   pinMode(7, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(7), s3Impulse, FALLING);
-  pinMode(8, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(8), s2Impulse, FALLING);
-  pinMode(9, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(9), s1Impulse, FALLING);
+  */
+  pinMode(4, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(4), pinN8_T4, CHANGE);
+  pinMode(3, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(3), pinN9_T3, CHANGE);
+  pinMode(2, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(2), pinN10_T2, CHANGE);
+  
   Serial.println("Setup finished ...");
 }
 
-uint8_t gCurrentPatternNumber = 0;
+uint8_t gCurrentVerticalPatternNumber = 0;
+uint8_t gCurrentSpinningPatternNumber = 0;
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
-typedef void (*SimplePatternList[])();
+typedef void (*patternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
-//SimplePatternList gPatterns = {ledTest};
-//SimplePatternList gPatterns = {effectTest};
-//SimplePatternList gPatterns = {effectTest2};
-//SimplePatternList gPatterns = {effectTest3};
-//SimplePatternList gPatterns = {effectTest4};
-//SimplePatternList gPatterns = {effectNoise};
-//SimplePatternList gPatterns = {effectMetaballs};
-//SimplePatternList gPatterns = {effectHeat};
 
-//SimplePatternList gPatterns = {effectLevel};
-//SimplePatternList gPatterns = {effectBinaryCounter};
-
-//SimplePatternList gPatterns = {effectFire};
-//SimplePatternList gPatterns = {effectPixels};
-//SimplePatternList gPatterns = {effectIce};
-//SimplePatternList gPatterns = {effectMatrix};
-
-//SimplePatternList gPatterns = {effectFire, effectPixels, effectIce, effectMatrix};
-//SimplePatternList gPatterns = {effectAirplane};
-
-
-//SimplePatternList gPatterns = {idleFluorescentTube, neontube};
-//SimplePatternList gPatterns = {idleRotation};
-//SimplePatternList gPatterns = {idlePulsating};
-SimplePatternList gPatterns = {idleRotation, idlePulsating};
-
-//SimplePatternList gPatterns = {glow, pixels2, vumeter2, snowflakes, binaryCounter};
-
-//SimplePatternList gPatterns = {lavalamp};
-//SimplePatternList gPatterns = {blocks};
-//SimplePatternList gPatterns = {rainbowSin};
-//SimplePatternList gPatterns = {idleFluorescentTube, idleRotation};
-
-
-
-
-//SimplePatternList gPatterns = {effectPalette};
+patternList patternListVertical = {effectFire, effectMatrix};
+patternList patternListSpinning = {idleRotation, idlePulsating};
 
 //////////
 // loop //
 //////////
 void loop() {
   //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
-  if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 20)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
+  //if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 20)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
+  if(millis() - lastEffectChange > 1000 * 20){
     Serial.println("Changing effect ...");    
     //ptrEffect = new Effect();
     //ptrEffect->init();
@@ -241,12 +220,10 @@ void loop() {
     FastLED.setBrightness(MAX_BRIGHTNESS);
     FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
 
-    gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);
-  }
-  if(millis() - lastImpulseDecrease > 1000){
-    lastImpulseDecrease = millis();
-    if(impulseCount > 0){
-      impulseCount--;
+    if(boolVertical){
+      gCurrentVerticalPatternNumber = (gCurrentVerticalPatternNumber + 1) % ARRAY_SIZE(patternListVertical);
+    }else{
+      gCurrentSpinningPatternNumber = (gCurrentSpinningPatternNumber + 1) % ARRAY_SIZE(patternListSpinning);
     }
   }
   /*
@@ -308,6 +285,19 @@ void loop() {
     boolRender = 0;
   }
   if(lastFrame + msPerFrame < millis()){
+
+leds[0] = CRGB::Green; 
+leds[NUM_LEDS - 1] = CRGB::Red; 
+
+if(boolSpinning){
+  leds[9] = CRGB::Blue;
+}
+if(boolVertical){
+  leds[9] = CRGB::Orange;
+} else {
+  leds[9] = CRGB::Black;
+}
+    
     FastLED.show();
     lastFrame = millis();  
     fCount++;
@@ -316,7 +306,6 @@ void loop() {
 
 }
 void renderFrame(){
-  
   ////////////////////////////////
   // THIS IS JUST THE BEGINNING //
   ////////////////////////////////
@@ -325,6 +314,7 @@ void renderFrame(){
   //ptrEffect->runPattern();
   //pixels2();
 
+/*
   if(vuSignal){
     effectVumeter();
   }else if(impulseCount <= 4){
@@ -332,26 +322,16 @@ void renderFrame(){
   }else{
     effectBinaryCounter();
   }
- 
-  firstFrame = false; 
+*/
+
+  //gPatterns[gCurrentPatternNumber](); 
+  if(boolVertical){
+    patternListVertical[gCurrentVerticalPatternNumber]();
+  }else{
+    patternListSpinning[gCurrentSpinningPatternNumber]();
+  }
+  firstFrame = false;
   /////////////////////
   // THIS IS THE END //
   /////////////////////
-  
-  if(!ledsEnabled){
-    FastLED.clear();
-  }
-  //leds[  2] = CRGB::Green;
-  //leds[141] = CRGB::Red;
-  
-  // debug
-  unsigned long frameDuration = millis() - lastFrame;
-  
-  if(frameDuration > 2) { if(frameDuration > 60){ frameDuration = 60; }; leds[frameDuration] = CRGB::Green;  }
-  if(wireDuration  > 16){ if(wireDuration  > 60){ wireDuration  = 60; };  leds[wireDuration] = CRGB::Yellow; }
-  //if(impulseCount  > 0){ leds[impulseCount]  = CRGB::Blue;   }
-  /////////////////////if(readFromNano){ leds[19] = CRGB::Green; } else { leds[19] = CRGB::Red; }
-  //if(vuSignal){ leds[20] = CRGB::Blue; } else { leds[20] = CRGB::Red; }
-  //leds[71]  = CHSV( 64, 255, 64); // bottom indicator
- 
 }
