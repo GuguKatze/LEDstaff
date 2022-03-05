@@ -23,6 +23,8 @@
 //   Teensy 4.0:  1, 8, 14, 17, 20, 24, 29, 39
 //   Teensy 4.1:  1, 8, 14, 17, 20, 24, 29, 35, 47, 53
 
+void effectNone();
+
 void effectTest();
 void effectTest2();
 void effectTest3();

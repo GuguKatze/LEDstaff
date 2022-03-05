@@ -22,7 +22,7 @@
 #include <i2c_driver.h>       // SCL 19 YELLOW
 #include <i2c_driver_wire.h>  // SDA 18 GREEN
 
-#include <SPI.h>
+//#include <SPI.h>
 
 
 Effect* ptrEffect = NULL;
@@ -47,9 +47,10 @@ bool blockingLookup[NUM_LEDS];
 /////////////
 // packets //
 /////////////
-union effectPacket_ effectPacket;
-union pitchPacket_  pitchPacket;
-union vuPacket_     vuPacket;
+union effectPacket_            effectPacket;
+union pitchPacket_              pitchPacket;
+union vuPacket_                    vuPacket;
+union pitchRemotePacket_  pitchRemotePacket;
 
 bool useSerial = true;
 bool ledsEnabled = true; // true;
@@ -81,18 +82,17 @@ void s4Impulse(){ Serial.println("s4"); lastImpulse = millis(); if(impulseCount 
 void vuImpulse(){ vuSignal = !digitalRead(5); vuChange = true; };
 */
 
-bool boolSpinning = false;
 bool boolVertical = false;
 bool boolUp       = false;
 
-void pinN3_T9(){                                Serial.println("pinN3_T9"); };
-void pinN4_T8(){                                Serial.println("pinN4_T8"); };
-void pinN5_T7(){                                Serial.println("pinN5_T7"); };
-void pinN6_T6(){                                Serial.println("pinN6_T6"); };
-void pinN7_T5(){                                Serial.println("pinN7_T5"); };
-void pinN8_T4(){ boolUp       = digitalRead(4); Serial.println("pinN8_T4"); };
-void pinN9_T3(){ boolVertical = digitalRead(3); Serial.println("pinN9_T3"); };
-void pinN10_T2(){boolSpinning = digitalRead(2); Serial.println("pinN10_T2"); };
+void pinN3_T9() {                                Serial.println( "pinN3_T9"); };
+void pinN4_T8() {                                Serial.println( "pinN4_T8"); };
+void pinN5_T7() {                                Serial.println( "pinN5_T7"); };
+void pinN6_T6() {                                Serial.println( "pinN6_T6"); };
+void pinN7_T5() {                                Serial.println( "pinN7_T5"); };
+void pinN8_T4() {                                Serial.println( "pinN8_T4"); };
+void pinN9_T3() { boolVertical = digitalRead(3); Serial.println( "pinN9_T3"); };
+void pinN10_T2(){ boolUp       = digitalRead(2); Serial.println("pinN10_T2"); };
 
 unsigned long wireDuration = 0;
 
@@ -102,26 +102,55 @@ float filteredRightFast[7];
 float  filteredLeftSlow[7];
 float filteredRightSlow[7];
 
+//   //}else if(packetType == 3 && howMany == 1 + sizeof(vuPacket.bytes)){
 void receiveEvent(int howMany)
 {
-  uint8_t packetType = Wire.read();
-  if(packetType == 1 && howMany == 2){
-     uint8_t effect = Wire.read();
-     //////////////////////////////Serial.println("[PACKET] effect: " + String(effect)); 
-  }else if(packetType == 2 && howMany == 2){
-     //pitch = Wire.read();
-     ////////////////////////Serial.println("[PACKET] pitch: " + String(pitch)); 
-  }else if(packetType == 3 && howMany == 1 + sizeof(vuPacket.bytes)){
+  //uint8_t packetType = Wire.read();
+  uint8_t packetType = Wire.peek();
+  
+  if(packetType == 1){ // effect
+    Serial.println("[PACKET] effect"); 
+    leds[20] = CRGB::Red;
+    int i = 0;
+    while(Wire.available()) {
+      effectPacket.bytes[i] = Wire.read();
+      i++;
+    }
+  }else if(packetType == 2){ // pitch
+    Serial.println("[PACKET] pitch"); 
+    leds[21] = CRGB::Green;
+    int i = 0;
+    while(Wire.available()) {
+      pitchPacket.bytes[i] = Wire.read();
+      i++;
+    }
+  }else if(packetType == 3){ // vu
+    Serial.println("[PACKET] vu"); 
+    leds[22] = CRGB::Blue;
     int i = 0;
     while(Wire.available()) {
       vuPacket.bytes[i] = Wire.read();
       i++;
     }
     vuFilter();
-    ///////////////////////////////////////////////////Serial.println("[PACKET] vu"); 
+  }else if(packetType == 4){ // pitchRemote
+    Serial.println("[PACKET] pitchRemote");
+    //leds[23] = CRGB::Green;
+    
+    int i = 0;
+    while(Wire.available()) {
+      pitchRemotePacket.bytes[i] = Wire.read();
+      i++;
+    }
+    uint8_t pitchRemoteLed = map(pitchRemotePacket.pitch, -90, 90, 143, 0);
+    if(pitchRemoteLed < 72){
+      pitchRemoteLed = 72 - pitchRemoteLed;
+    }
+    leds[pitchRemoteLed] = CRGB::Orange;
   }
   // empty the buffer just to be safe?
   while(Wire.available() > 0) {
+    Serial.println("Should not see this???");  
     Wire.read();
   }
 }
@@ -129,14 +158,12 @@ void receiveEvent(int howMany)
 void setup() {
   delay(1000); if(useSerial){ Serial.begin(115200); }; delay(1000);
   if(useSerial && !Serial){ delay(1000); if(!Serial){useSerial = false; }; }
-  if(useSerial){ Serial.println("Starting up ..."); };
+
   // DATA_RATE_MHZ(24)++
   FastLED.addLeds<SK9822,       11, 13, BGR>(     leds,                      0, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 11 GREEN, CLOCK 13 YELLOW
   FastLED.addLeds<WS2812SERIAL, 14,     BRG>(secondary,                      0, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 14 WHITE
-  
   FastLED.addLeds<SK9822,       26, 27, BGR>(     leds,           NUM_LEDS / 2, NUM_LEDS / 2          ).setCorrection(TypicalLEDStrip); // DATA 26 GREEN, CLOCK 27 YELLOW
   FastLED.addLeds<WS2812SERIAL, 17,     BRG>(secondary, NUM_LEDS_SECONDARY / 2, NUM_LEDS_SECONDARY / 2).setCorrection(TypicalLEDStrip); // DATA 17 WHITE
-  
   
   FastLED.setBrightness(MAX_BRIGHTNESS); // PWM duty cycles
   //FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
@@ -184,7 +211,7 @@ void setup() {
   pinMode(6, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(6), s4Impulse, FALLING);
   pinMode(7, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(7), s3Impulse, FALLING);
   */
-  pinMode(4, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(4), pinN8_T4, CHANGE);
+  //pinMode(4, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(4), pinN8_T4, CHANGE);
   pinMode(3, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(3), pinN9_T3, CHANGE);
   pinMode(2, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(2), pinN10_T2, CHANGE);
   
@@ -198,8 +225,11 @@ typedef void (*patternList[])();
 
 // <-------------------------------------------------------------------------------------------------------------------------- PATTERN LIST ----------------------------------------------------------------------
 
-patternList patternListVertical = {effectFire, effectMatrix};
-patternList patternListSpinning = {idleRotation, idlePulsating};
+// effectIce
+//patternList patternListVertical = {effectFire, effectMatrix};
+patternList patternListVertical = {effectMatrix};
+//patternList patternListVertical = {effectBinaryCounter, effectPixels};
+patternList patternListSpinning = {idleRotation, idlePulsating, idleFluorescentTube, neontube};
 
 //////////
 // loop //
@@ -286,16 +316,13 @@ void loop() {
   }
   if(lastFrame + msPerFrame < millis()){
 
-leds[0] = CRGB::Green; 
-leds[NUM_LEDS - 1] = CRGB::Red; 
+//leds[0] = CRGB::Green; 
+//leds[NUM_LEDS - 1] = CRGB::Red; 
 
-if(boolSpinning){
-  leds[9] = CRGB::Blue;
-}
 if(boolVertical){
-  leds[9] = CRGB::Orange;
+  leds[9] = CRGB::Green;
 } else {
-  leds[9] = CRGB::Black;
+  leds[9] = CRGB::Red;
 }
     
     FastLED.show();
@@ -324,12 +351,14 @@ void renderFrame(){
   }
 */
 
-  //gPatterns[gCurrentPatternNumber](); 
-  if(boolVertical){
-    patternListVertical[gCurrentVerticalPatternNumber]();
-  }else{
-    patternListSpinning[gCurrentSpinningPatternNumber]();
-  }
+  
+  //if(boolVertical){
+  //  patternListVertical[gCurrentVerticalPatternNumber]();
+  //}else{
+  //  patternListSpinning[gCurrentSpinningPatternNumber]();
+  //}
+  
+  effectNone();
   firstFrame = false;
   /////////////////////
   // THIS IS THE END //
