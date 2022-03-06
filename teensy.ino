@@ -58,17 +58,15 @@ bool ledsEnabled = true; // true;
 uint8_t gHue = 0;
 unsigned int msPerFrame =  10;
 unsigned long lastFrame =   0;
-bool boolRender = 1;
+bool boolRender = true;
 unsigned long fCount = 0;
 
 bool firstFrame = true; // set for the first frame of an effect
-bool readFromNano = false;
 
-unsigned int state = 0;
-unsigned long lastImpulse = 0;
+bool boolNewEffect = false;
+bool boolIdle = true;
 unsigned long lastEffectChange = 0;
-unsigned long lastImpulseDecrease = 0;
-unsigned long lastWireTime = 0;
+
 bool vuChange = false;
 bool vuSignal = false;
 
@@ -109,44 +107,30 @@ void receiveEvent(int howMany)
   uint8_t packetType = Wire.peek();
   
   if(packetType == 1){ // effect
-    Serial.println("[PACKET] effect"); 
-    leds[20] = CRGB::Red;
-    int i = 0;
-    while(Wire.available()) {
-      effectPacket.bytes[i] = Wire.read();
-      i++;
-    }
+    //leds[20] = CRGB::Red;
+    int i = 0; while(Wire.available()){ effectPacket.bytes[i] = Wire.read(); i++; }
+    ////////////////
+    /// ON EFFECT //
+    boolNewEffect = true;
+    boolIdle = false;
+    lastEffectChange = millis();
+    Serial.println(effectPacket.effect);
+    /// ON EFFECT //
+    ////////////////
   }else if(packetType == 2){ // pitch
-    Serial.println("[PACKET] pitch"); 
-    leds[21] = CRGB::Green;
-    int i = 0;
-    while(Wire.available()) {
-      pitchPacket.bytes[i] = Wire.read();
-      i++;
-    }
+    //leds[21] = CRGB::Green;
+    int i = 0; while(Wire.available()){ pitchPacket.bytes[i] = Wire.read(); i++; }
   }else if(packetType == 3){ // vu
-    Serial.println("[PACKET] vu"); 
-    leds[22] = CRGB::Blue;
-    int i = 0;
-    while(Wire.available()) {
-      vuPacket.bytes[i] = Wire.read();
-      i++;
-    }
+    //leds[22] = CRGB::Blue;
+    int i = 0; while(Wire.available()){ vuPacket.bytes[i] = Wire.read(); i++; }
     vuFilter();
   }else if(packetType == 4){ // pitchRemote
-    Serial.println("[PACKET] pitchRemote");
     //leds[23] = CRGB::Green;
-    
-    int i = 0;
-    while(Wire.available()) {
-      pitchRemotePacket.bytes[i] = Wire.read();
-      i++;
-    }
-    uint8_t pitchRemoteLed = map(pitchRemotePacket.pitch, -90, 90, 143, 0);
-    if(pitchRemoteLed < 72){
-      pitchRemoteLed = 72 - pitchRemoteLed;
-    }
-    leds[pitchRemoteLed] = CRGB::Orange;
+    int i = 0; while(Wire.available()){ pitchRemotePacket.bytes[i] = Wire.read(); i++; }
+    int8_t pitchRemoteConstrained = constrain(pitchRemotePacket.pitch, -45, 45);
+    uint8_t pitchRemoteLed = map(pitchRemoteConstrained, -45, 45, 143, 0);
+    if(pitchRemoteLed <= 71){ pitchRemoteLed = 71 - pitchRemoteLed; }
+    //leds[pitchRemoteLed] = CRGB::Orange;
   }
   // empty the buffer just to be safe?
   while(Wire.available() > 0) {
@@ -218,6 +202,7 @@ void setup() {
   Serial.println("Setup finished ...");
 }
 
+uint8_t currentEffect = 0;
 uint8_t gCurrentVerticalPatternNumber = 0;
 uint8_t gCurrentSpinningPatternNumber = 0;
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
@@ -230,6 +215,8 @@ typedef void (*patternList[])();
 patternList patternListVertical = {effectMatrix};
 //patternList patternListVertical = {effectBinaryCounter, effectPixels};
 patternList patternListSpinning = {idleRotation, idlePulsating, idleFluorescentTube, neontube};
+//                              0           1             2             3                    4          5
+patternList effects = {effectNone, effectFire, effectMatrix, effectPixels, effectBinaryCounter, effectIce};
 
 //////////
 // loop //
@@ -237,82 +224,27 @@ patternList patternListSpinning = {idleRotation, idlePulsating, idleFluorescentT
 void loop() {
   //if(vuChange){ Serial.println("--- VU CHANGE ---"); }
   //if(vuChange || (ARRAY_SIZE(gPatterns) > 1 && millis() - lastEffectChange > 1000 * 20)){ // change effect if vu signal starts/ends or every n minutes if there are more than 1 effects configured
-  if(millis() - lastEffectChange > 1000 * 20){
+  //if(millis() - lastEffectChange > 1000 * 20){
+ 
+  if(!boolIdle && millis() - lastEffectChange > 1000 * effectPacket.duration){
+    boolNewEffect = true;
+    boolIdle = true;
+  }
+  if(boolNewEffect){
+    boolNewEffect = false;
     Serial.println("Changing effect ...");    
     //ptrEffect = new Effect();
     //ptrEffect->init();
 
-    lastEffectChange = millis();
     firstFrame = true;
     fCount = 0;
-    if(vuChange){ vuChange = false; };
-
+    //if(vuChange){ vuChange = false; };
     FastLED.setBrightness(MAX_BRIGHTNESS);
     FastLED.setMaxPowerInVoltsAndMilliamps(MAX_POWER_VOLTS, MAX_POWER_MILLIAMPS);
-
-    if(boolVertical){
-      gCurrentVerticalPatternNumber = (gCurrentVerticalPatternNumber + 1) % ARRAY_SIZE(patternListVertical);
-    }else{
-      gCurrentSpinningPatternNumber = (gCurrentSpinningPatternNumber + 1) % ARRAY_SIZE(patternListSpinning);
-    }
   }
-  /*
-  if(readFromNano && millis() - lastWireTime > 50){
-    lastWireTime = millis();
-    unsigned long wireStartTime = millis();
-    //Wire.requestFrom(0x40, sizeof(vu.bytes));
-    //    Serial.print((char)Wire.peek());
-
-    uint8_t packetType = 0;
-    Wire.requestFrom(0x40, 1);
-    while(Wire.available()){
-      packetType = Wire.read();    // receive a byte as character
-    }
-    switch (packetType) {
-      case 0:
-        break;
-      case 1:
-        Serial.println("[packet] effect");
-        Wire.requestFrom(0x40, 1);
-        while(Wire.available()){
-          Wire.read();
-        }
-      case 3:
-        Serial.println("[packet] pitch");
-        Wire.requestFrom(0x40, 1);
-        while(Wire.available()){
-          Wire.read();
-        }
-        break;
-      default:
-        Serial.println("[packet] ???"); 
-        break;
-    }
-*/
-/*
-    uint8_t packetType = (uint8_t)Wire.peek();
-    if(packetType == 3){
-      Serial.println("[packet] pitch");  
-    }else{
-      Serial.println("[packet] " + String(packetType));  
-    }
-*/
-    /*
-    Wire.requestFrom(0x40, sizeof(I2Cdata.bytes));
-    if (Wire.available()) {
-      int i = 0; while(Wire.available()) { I2Cdata.bytes[i] = Wire.read(); i++; }
-    }
-    memcpy8(&vu.bytes[0], &I2Cdata.bytes[0], sizeof vu.bytes); // copy vu data from the I2C union over to the vu union
-    vuFilter();
-    */
-
-    
-    //wireDuration = millis() - wireStartTime;
-  //}
-
   if(boolRender){
     renderFrame();
-    boolRender = 0;
+    boolRender = false;
   }
   if(lastFrame + msPerFrame < millis()){
 
@@ -320,9 +252,9 @@ void loop() {
 //leds[NUM_LEDS - 1] = CRGB::Red; 
 
 if(boolVertical){
-  leds[9] = CRGB::Green;
+  //leds[9] = CRGB::Green;
 } else {
-  leds[9] = CRGB::Red;
+  //leds[9] = CRGB::Red;
 }
     
     FastLED.show();
@@ -357,8 +289,11 @@ void renderFrame(){
   //}else{
   //  patternListSpinning[gCurrentSpinningPatternNumber]();
   //}
-  
-  effectNone();
+  if(boolIdle){
+    effectNone();
+  }else{
+    effects[effectPacket.effect]();
+  }
   firstFrame = false;
   /////////////////////
   // THIS IS THE END //

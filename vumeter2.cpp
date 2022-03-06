@@ -13,7 +13,7 @@ uint8_t hiddenAmount = NUM_LEDS / 2;
 
 void effectVumeter () {
   if(firstFrame){
-    readFromNano = true;
+    //readFromNano = true;
     extending = true;
     hiddenAmount = NUM_LEDS / 2;
     FastLED.setBrightness(MAX_BRIGHTNESS);

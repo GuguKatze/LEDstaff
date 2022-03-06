@@ -2,7 +2,7 @@
 
 void vupixels () {
   if(firstFrame){
-    readFromNano = true;
+    //readFromNano = true;
     FastLED.setBrightness(MAX_BRIGHTNESS);
     msPerFrame = 10;
     fill_solid (&bufferBig[0], NUM_LEDS * 3, CRGB::Black);

@@ -22,12 +22,9 @@ extern CRGB secondary[NUM_LEDS_SECONDARY];
 
 extern bool blockingLookup[NUM_LEDS];
 
-extern int8_t pitch;
-
 extern bool useSerial;
 extern bool ledsEnabled;
 extern bool firstFrame;
-extern bool readFromNano;
 
 extern bool boolSpinning;
 extern bool boolVertical;
@@ -38,14 +35,6 @@ extern uint8_t gHue;
 extern unsigned int msPerFrame;
 extern unsigned long fCount;
 
-//extern uint8_t msPerHue;
-//extern uint8_t hueIncrement;
-//extern unsigned long 
-//extern unsigned long pixelNextUpdateTime;
-
-extern unsigned int state;
-
-//extern unsigned long frameCount;
 void vuFilter();
 int findUnused();
 void DrawPixels(float fPos, float count, CRGB color);
@@ -58,18 +47,6 @@ void b2l(unsigned int bufferIndex, unsigned int ledsIndex, unsigned int numberOf
 
 void bar2handle();
 void ledsTmp2leds();
-
-/*
-union I2Cdata_ {
-  struct __attribute__((packed)){
-    uint8_t left[7];
-    uint8_t right[7];
-    int8_t pitch;
-  };
-  uint8_t bytes[15];
-};
-extern union I2Cdata_ I2Cdata;
-*/
 
 typedef struct Pixel {
   bool used;
@@ -91,18 +68,6 @@ extern float filteredRightFast[7];
 extern float filteredLeftSlow[7];
 extern float filteredRightSlow[7];
 
-
-/*
-union vu_ {
-  struct __attribute__((packed)){
-    uint8_t left[7];
-    uint8_t right[7];
-  };
-  uint8_t bytes[14];
-};
-extern union vu_ vu;
-*/
-
 ////////////
 // effect //
 ////////////
@@ -110,8 +75,9 @@ union effectPacket_ {
   struct __attribute__((packed)){
     uint8_t packetType = 1;
     uint8_t effect;
+    uint8_t duration;
   };
-  uint8_t bytes[2];
+  uint8_t bytes[3];
 };
 extern union effectPacket_ effectPacket;
 ///////////
